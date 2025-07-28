@@ -2,71 +2,89 @@ import { useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 
 export default function Header() {
-  const [open, setOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
 
-  const navLinks = [
+  const links = [
     { to: '/', label: 'Home' },
-    { to: '/stores', label: 'Stores' },
-    { to: '/products', label: 'Products' },
-    { to: '/contact', label: 'Contact' },
-    { to: '/auth', label: 'Login/Register' },
+    { to: '/templates', label: 'Templates' },
+    { to: '/pricing', label: 'Pricing' },
+    { to: '/support', label: 'Support' },
   ];
 
   return (
-    <header className="bg-[#1C2B64] text-white dark:bg-[#0E0D0D]">
-      <div className="max-w-7xl mx-auto flex items-center justify-between p-4">
-        <Link to="/" className="font-bold text-lg">
-          <span>Moohaar</span>
-          <span className="font-nastaliq hidden sm:block text-sm">
+    <header className="bg-white text-primary shadow">
+      <div className="max-w-7xl mx-auto flex items-center justify-between px-4 py-2">
+        {/* Logo */}
+        <Link to="/" className="leading-tight font-mont">
+          <span className="block font-bold text-xl text-primary">Moohaar</span>
+          <span className="block font-nastaliq text-[14px] text-accent">
             ویبسائٹ آج اور ابھی
           </span>
         </Link>
-        <button
-          className="md:hidden p-2 focus:outline-none"
-          onClick={() => setOpen(!open)}
-          aria-label="Menu"
-        >
-          <svg
-            className="w-6 h-6"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
+
+        {/* Desktop navigation */}
+        <nav className="hidden md:flex space-x-6 font-mont" aria-label="Main navigation">
+          {links.map(({ to, label }) => (
+            <NavLink key={to} to={to} className="hover:text-accent">
+              {label}
+            </NavLink>
+          ))}
+        </nav>
+
+        {/* Desktop buttons */}
+        <div className="hidden md:flex items-center space-x-4 font-mont">
+          <Link to="/login" className="hover:text-accent">Login</Link>
+          <Link
+            to="/create-store"
+            className="px-4 py-2 rounded bg-highlight text-primary font-semibold hover:bg-accent"
           >
-            {open ? (
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M6 18L18 6M6 6l12 12"
-              />
+            Create Store
+          </Link>
+        </div>
+
+        {/* Mobile menu toggle */}
+        <button
+          onClick={() => setMenuOpen(!menuOpen)}
+          className="md:hidden p-2"
+          aria-label="Toggle Menu"
+        >
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            {menuOpen ? (
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
             ) : (
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M4 6h16M4 12h16M4 18h16"
-              />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
             )}
           </svg>
         </button>
-        <nav
-          className={`${open ? 'block' : 'hidden'} absolute top-full left-0 w-full bg-[#1C2B64] md:static md:block md:w-auto`}
-        >
-          <ul className="md:flex md:space-x-6">
-            {navLinks.map(({ to, label }) => (
+      </div>
+
+      {/* Mobile dropdown */}
+      <div className={`${menuOpen ? 'block' : 'hidden'} md:hidden bg-white text-primary border-t`}> 
+        <nav aria-label="Mobile navigation">
+          <ul className="flex flex-col font-mont">
+            {links.map(({ to, label }) => (
               <li key={to}>
                 <NavLink
                   to={to}
-                  onClick={() => setOpen(false)}
-                  className={({ isActive }) =>
-                    `block px-4 py-2 hover:text-[#FBECB2] ${isActive ? 'text-[#FBECB2]' : ''}`
-                  }
+                  onClick={() => setMenuOpen(false)}
+                  className="block px-4 py-2 hover:bg-accent/40"
                 >
                   {label}
                 </NavLink>
               </li>
             ))}
+            <li>
+              <Link to="/login" onClick={() => setMenuOpen(false)} className="block px-4 py-2 hover:bg-accent/40">Login</Link>
+            </li>
+            <li>
+              <Link
+                to="/create-store"
+                onClick={() => setMenuOpen(false)}
+                className="block px-4 py-2 bg-highlight text-primary font-semibold hover:bg-accent"
+              >
+                Create Store
+              </Link>
+            </li>
           </ul>
         </nav>
       </div>
