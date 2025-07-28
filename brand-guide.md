@@ -1,51 +1,45 @@
-## 🐮 Moohaar Brand Guide
+# 🟦 Moohaar Brand Guide
 
-### Brand Name
-**Moohaar**  
-**Tagline:** ویبسائٹ آج اور ابھی
-
----
-
-### 🎨 Brand Colors
-
-#### Primary Theme
-
-| Name        | Hex       | Usage                              |
-|-------------|-----------|-------------------------------------|
-| Primary     | #1C2B64   | Logo, headers, buttons, nav bar     |
-| Accent 1    | #FBECB2   | Backgrounds, cards                  |
-| Accent 2    | #F8BDEB   | Badges, soft highlights             |
-| Secondary   | #5272F2   | Links, CTAs                         |
-| Dark Shade  | #072541   | Footer, outlines                    |
-
-#### Dark Mode Theme
-
-| Name        | Hex       | Usage                              |
-|-------------|-----------|-------------------------------------|
-| Background  | #0E0D0D   | Main background                     |
-| Primary     | #1C2B64   | Headings, buttons                   |
-| Highlight   | #E2AA4D   | Icons, toggles                      |
-| Surface     | #E2E9ED   | Cards, containers                   |
+**Platform Name:** Moohaar  
+**Tagline (Urdu):** ویبسائٹ آج اور ابھی
 
 ---
 
-### 🛠 Suggested Additions
+## 🎨 Color Palette
 
-| Type    | Color    | Hex       |
-|---------|----------|-----------|
-| Success | Green    | #3EB489   |
-| Warning | Yellow   | #FFBE0B   |
-| Error   | Red      | #E63946   |
+### 🌐 Primary Theme
+- `#1C2B64` – Primary Blue
+- `#FBECB2` – Soft Cream
+- `#F8BDEB` – Light Pink
+- `#5272F2` – Sky Blue
+- `#072541` – Navy Shadow
 
-- Add hover/active states with 10–15% darker/lighter shades.
-- Optional Gradient: `linear-gradient(135deg, #1C2B64, #5272F2)`
+### 🌑 Dark Mode Theme
+- `#0E0D0D` – Deep Black
+- `#1C2B64` – Indigo (shared with primary)
+- `#E2AA4D` – Rich Gold
+- `#E2E9ED` – Cloudy White
 
 ---
 
-### 📘 To Be Updated
+## 🔤 Font System
 
-- [ ] Fonts
-- [ ] Logo usage guidelines
-- [ ] Component spacing & padding
-- [ ] Button and card shapes
+### ✅ Font Combo
+- **Montserrat** – For modern, minimal English UI
+- **Nastaliq Urdu** – For Urdu taglines and culturally-rich headings
 
+### ⚙️ Usage Strategy
+
+| Section        | Font        | Weight   |
+|----------------|-------------|----------|
+| Headings       | Montserrat  | 700      |
+| Subheadings    | Montserrat  | 600      |
+| Body text      | Montserrat  | 400      |
+| Urdu Taglines  | Nastaliq    | Regular  |
+
+> ⚡ *Fonts will be optimized by importing only selected weights with `display=swap` for better loading speed.*
+
+---
+
+📁 This file will evolve:  
+Next update will include brand imagery, spacing rules, and UI component design tokens.
