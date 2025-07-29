@@ -1,7 +1,32 @@
+import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 
 export default function Home() {
+  const navigate = useNavigate();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    setIsLoggedIn(!!token);
+  }, []);
+
+  const handleGetStartedClick = () => {
+    if (isLoggedIn) {
+      navigate('/dashboard');
+    } else {
+      navigate('/signup');
+    }
+  };
+
+  const handleCreateStoreClick = () => {
+    if (isLoggedIn) {
+      navigate('/create-store');
+    } else {
+      navigate('/signup');
+    }
+  };
   return (
     <div className="min-h-screen flex flex-col bg-white text-slate-800 font-mont overflow-x-hidden">
 
@@ -33,7 +58,10 @@ export default function Home() {
           </p>
 
           <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-5">
-            <button className="group bg-accent text-primary font-bold px-8 py-4 rounded-2xl shadow-lg hover:shadow-accent/40 transition-all duration-300 hover:-translate-y-1">
+            <button 
+              onClick={handleGetStartedClick}
+              className="group bg-accent text-primary font-bold px-8 py-4 rounded-2xl shadow-lg hover:shadow-accent/40 transition-all duration-300 hover:-translate-y-1"
+            >
               Get Started Free
               <svg className="inline-block w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd" />
@@ -145,7 +173,10 @@ export default function Home() {
           <p className="text-lg md:text-xl text-white/80 mt-4 max-w-xl mx-auto">
             Build your store in minutes, not days. Thousands are already scaling with Moohaar.
           </p>
-          <button className="mt-10 px-10 py-5 bg-accent text-primary font-bold rounded-2xl shadow-lg hover:shadow-accent/40 transition-all duration-300 hover:-translate-y-1 text-lg">
+          <button 
+            onClick={handleCreateStoreClick}
+            className="mt-10 px-10 py-5 bg-accent text-primary font-bold rounded-2xl shadow-lg hover:shadow-accent/40 transition-all duration-300 hover:-translate-y-1 text-lg"
+          >
             Claim your free store →
           </button>
           <p className="text-white/70 text-sm mt-4">Free forever plan • No hidden fees</p>

@@ -1,8 +1,25 @@
-import { useState } from 'react';
-import { Link, NavLink } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    setIsLoggedIn(!!token);
+  }, []);
+
+  const handleCreateStoreClick = (e) => {
+    e.preventDefault();
+    if (isLoggedIn) {
+      navigate('/create-store');
+    } else {
+      navigate('/signup');
+    }
+    setMenuOpen(false);
+  };
 
   const links = [
     { to: '/', label: 'Home' },
@@ -34,12 +51,12 @@ export default function Header() {
         {/* Desktop buttons */}
         <div className="hidden md:flex items-center space-x-4 font-mont">
           <Link to="/login" className="hover:text-accent">Login</Link>
-          <Link
-            to="/create-store"
+          <button
+            onClick={handleCreateStoreClick}
             className="px-4 py-2 rounded bg-highlight text-primary font-semibold hover:bg-gold hover:scale-105 transition-all duration-300"
           >
             Create Store
-          </Link>
+          </button>
         </div>
 
         {/* Mobile menu toggle */}
@@ -77,13 +94,12 @@ export default function Header() {
               <Link to="/login" onClick={() => setMenuOpen(false)} className="block px-4 py-2 hover:bg-accent/40">Login</Link>
             </li>
             <li>
-              <Link
-                to="/create-store"
-                onClick={() => setMenuOpen(false)}
-                className="block px-4 py-2 bg-highlight text-primary font-semibold hover:bg-gold hover:scale-105 transition-all duration-300"
+              <button
+                onClick={handleCreateStoreClick}
+                className="block w-full text-left px-4 py-2 bg-highlight text-primary font-semibold hover:bg-gold hover:scale-105 transition-all duration-300"
               >
                 Create Store
-              </Link>
+              </button>
             </li>
           </ul>
         </nav>
