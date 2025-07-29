@@ -7,24 +7,24 @@ export default function Footer() {
         {/* Logo & Tagline */}
         <div>
           <h2 className="text-lg font-bold uppercase">Moohaar</h2>
-          <p className="text-sm text-accent font-nastaliq">ویبسائٹ آج اور ابھی</p>
+          <p className="font-nastaliq tracking-wide text-gold text-lg md:text-xl pb-1">ویبسائٹ آج اور ابھی</p>
           <div className="flex justify-center md:justify-start space-x-4 mt-2">
-            <a href="#" aria-label="Facebook" className="hover:text-accent">📘</a>
-            <a href="#" aria-label="Twitter" className="hover:text-accent">🐦</a>
-            <a href="#" aria-label="Instagram" className="hover:text-accent">📸</a>
+            <a href="#" aria-label="Facebook" className="hover:text-gold">📘</a>
+            <a href="#" aria-label="Twitter" className="hover:text-gold">🐦</a>
+            <a href="#" aria-label="Instagram" className="hover:text-gold">📸</a>
           </div>
         </div>
 
         {/* Quick Links */}
         <div>
           <h3 className="font-semibold mb-2">Quick Links</h3>
-          <ul className="grid grid-cols-2 gap-x-4 gap-y-1">
-            <li><Link to="/" className="hover:text-accent">Home</Link></li>
-            <li><Link to="/templates" className="hover:text-accent">Templates</Link></li>
-            <li><Link to="/pricing" className="hover:text-accent">Pricing</Link></li>
-            <li><Link to="/support" className="hover:text-accent">Support</Link></li>
-            <li><Link to="/privacy" className="hover:text-accent">Privacy Policy</Link></li>
-            <li><Link to="/terms" className="hover:text-accent">Terms</Link></li>
+          <ul className="grid grid-cols-2 gap-x-4 gap-y-2 leading-loose">
+            <li><Link to="/" className="text-softLight hover:text-gold">Home</Link></li>
+            <li><Link to="/templates" className="text-softLight hover:text-gold">Templates</Link></li>
+            <li><Link to="/pricing" className="text-softLight hover:text-gold">Pricing</Link></li>
+            <li><Link to="/support" className="text-softLight hover:text-gold">Support</Link></li>
+            <li><Link to="/privacy" className="text-softLight hover:text-gold">Privacy Policy</Link></li>
+            <li><Link to="/terms" className="text-softLight hover:text-gold">Terms</Link></li>
           </ul>
         </div>
 
@@ -32,18 +32,18 @@ export default function Footer() {
         <div>
           <h3 className="font-semibold mb-2">Contact</h3>
           <p>
-            <a href="mailto:support@moohaar.pk" className="hover:text-accent">
+            <a href="mailto:support@moohaar.pk" className="text-softLight hover:text-gold">
               support@moohaar.pk
             </a>
           </p>
           <p>
-            <a href="https://wa.me/923001234567" className="hover:text-accent">
+            <a href="https://wa.me/923001234567" className="text-softLight hover:text-gold">
               +92 300 1234567
             </a>
           </p>
         </div>
       </div>
-      <div className="text-center py-4 text-xs text-accent">
+      <div className="text-center py-4 text-xs text-softLight">
         © Moohaar 2025. All rights reserved.
       </div>
     </footer>

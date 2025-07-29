@@ -17,7 +17,7 @@ export default function Header() {
         {/* Logo */}
         <Link to="/" className="leading-tight font-mont">
           <span className="block font-bold text-xl text-primary">Moohaar</span>
-          <span className="block font-nastaliq text-[14px] text-accent">
+          <span className="block font-nastaliq tracking-wide text-gold text-lg md:text-xl pb-1">
             ویبسائٹ آج اور ابھی
           </span>
         </Link>
@@ -36,7 +36,7 @@ export default function Header() {
           <Link to="/login" className="hover:text-accent">Login</Link>
           <Link
             to="/create-store"
-            className="px-4 py-2 rounded bg-highlight text-primary font-semibold hover:bg-accent"
+            className="px-4 py-2 rounded bg-highlight text-primary font-semibold hover:bg-gold hover:scale-105 transition-all duration-300"
           >
             Create Store
           </Link>
@@ -80,7 +80,7 @@ export default function Header() {
               <Link
                 to="/create-store"
                 onClick={() => setMenuOpen(false)}
-                className="block px-4 py-2 bg-highlight text-primary font-semibold hover:bg-accent"
+                className="block px-4 py-2 bg-highlight text-primary font-semibold hover:bg-gold hover:scale-105 transition-all duration-300"
               >
                 Create Store
               </Link>
