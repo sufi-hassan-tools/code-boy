@@ -3,7 +3,7 @@ import Footer from '../components/Footer';
 
 export default function Home() {
   return (
-    <div className="min-h-screen flex flex-col bg-white text-deep font-mont">
+    <div className="min-h-screen flex flex-col bg-softLight text-deep font-mont">
       <Header />
 
       <main className="flex-grow">
@@ -35,10 +35,10 @@ export default function Home() {
             </p>
           </div>
           <div className="flex flex-col items-center">
-            <div className="text-4xl mb-2">🚀</div>
-            <h3 className="font-semibold">Free Until First 10 Sales</h3>
+            <div className="text-4xl mb-2">⚡</div>
+            <h3 className="font-semibold">Fast</h3>
             <p className="text-sm text-gray-600">
-              Launch your store for free and pay only after your first ten sales.
+              Your store loads quickly so customers stay engaged.
             </p>
           </div>
         </section>
