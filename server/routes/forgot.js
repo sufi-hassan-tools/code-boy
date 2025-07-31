@@ -10,6 +10,9 @@ let resetTokens = {};
 // support both /forgot-password (documented) and /forgot (legacy)
 router.post(["/forgot-password", "/forgot"], async (req, res) => {
   const { email } = req.body;
+  if (!email) {
+    return res.status(400).json({ msg: "Email is required" });
+  }
   try {
     const user = await User.findOne({ email });
     if (!user) return res.status(400).json({ msg: "User not found" });
@@ -52,6 +55,9 @@ router.post(["/forgot-password", "/forgot"], async (req, res) => {
 router.post("/reset-password/:token", async (req, res) => {
   const { token } = req.params;
   const { email, newPassword } = req.body;
+  if (!email || !newPassword) {
+    return res.status(400).json({ msg: "Email and new password are required" });
+  }
 
   try {
     if (resetTokens[email] !== token) return res.status(400).json({ msg: "Invalid token" });
