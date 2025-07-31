@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { apiCall } from '../utils/api';
 
 export default function Signup() {
   const [formData, setFormData] = useState({
@@ -29,28 +30,23 @@ export default function Signup() {
     }
 
     try {
-      const response = await fetch('/api/auth/signup', {
+      const result = await apiCall('/api/auth/signup', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
         body: JSON.stringify({
           email: formData.email,
           password: formData.password
         })
       });
 
-      const data = await response.json();
-
-      if (response.ok) {
-        localStorage.setItem('token', data.token);
-        localStorage.setItem('user', JSON.stringify(data.user));
+      if (result.ok) {
+        localStorage.setItem('token', result.data.token);
+        localStorage.setItem('user', JSON.stringify(result.data.user));
         window.location.href = '/dashboard';
       } else {
-        setError(data.msg || 'Signup failed');
+        setError(result.data.msg || 'Signup failed. Please try again.');
       }
     } catch (err) {
-      setError('Network error. Please try again.');
+      setError(err.message);
     } finally {
       setLoading(false);
     }

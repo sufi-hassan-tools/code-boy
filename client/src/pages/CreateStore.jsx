@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { apiCall } from '../utils/api';
 
 export default function CreateStore() {
   const [formData, setFormData] = useState({
@@ -29,25 +30,22 @@ export default function CreateStore() {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('/api/store/create', {
+      const result = await apiCall('/api/store/create', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify(formData)
       });
 
-      const data = await response.json();
-
-      if (response.ok) {
+      if (result.ok) {
         alert('Store created successfully!');
         navigate('/dashboard');
       } else {
-        setError(data.msg || 'Store creation failed');
+        setError(result.data.msg || 'Store creation failed. Please try again.');
       }
     } catch (err) {
-      setError('Network error. Please try again.');
+      setError(err.message);
     } finally {
       setLoading(false);
     }

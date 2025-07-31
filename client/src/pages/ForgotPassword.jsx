@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { apiCall } from '../utils/api';
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState('');
@@ -14,23 +15,18 @@ export default function ForgotPassword() {
     setMessage('');
 
     try {
-      const response = await fetch('/api/password/forgot-password', {
+      const result = await apiCall('/api/password/forgot-password', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
         body: JSON.stringify({ email })
       });
 
-      const data = await response.json();
-
-      if (response.ok) {
+      if (result.ok) {
         setMessage('Password reset link has been sent to your email.');
       } else {
-        setError(data.msg || 'Failed to send reset link');
+        setError(result.data.msg || 'Failed to send reset link. Please try again.');
       }
     } catch (err) {
-      setError('Network error. Please try again.');
+      setError(err.message);
     } finally {
       setLoading(false);
     }

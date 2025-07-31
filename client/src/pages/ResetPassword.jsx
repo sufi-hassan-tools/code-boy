@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { apiCall } from '../utils/api';
 
 export default function ResetPassword() {
   const { token } = useParams();
@@ -31,27 +32,22 @@ export default function ResetPassword() {
     }
 
     try {
-      const response = await fetch(`/api/password/reset-password/${token}`, {
+      const result = await apiCall(`/api/password/reset-password/${token}`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
         body: JSON.stringify({
           email: formData.email,
           newPassword: formData.newPassword
         })
       });
 
-      const data = await response.json();
-
-      if (response.ok) {
+      if (result.ok) {
         alert('Password reset successful! You can now login with your new password.');
         navigate('/login');
       } else {
-        setError(data.msg || 'Password reset failed');
+        setError(result.data.msg || 'Password reset failed. Please try again.');
       }
     } catch (err) {
-      setError('Network error. Please try again.');
+      setError(err.message);
     } finally {
       setLoading(false);
     }
