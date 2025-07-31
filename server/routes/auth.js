@@ -7,19 +7,27 @@ const router = express.Router();
 
 router.post("/signup", async (req, res) => {
   const { email, password } = req.body;
+  console.log("Signup attempt for email:", email);
   try {
     const exists = await User.findOne({ email });
-    if (exists) return res.status(400).json({ msg: "Email already in use" });
+    if (exists) {
+      console.log("Email already in use:", email);
+      return res.status(400).json({ msg: "Email already in use" });
+    }
 
     const hashed = await bcrypt.hash(password, 10);
+    console.log("Password hashed.");
     const user = await User.create({ email, password: hashed });
+    console.log("User created:", user.email);
 
     const token = jwt.sign({ id: user._id }, getPrivateKey(), {
       algorithm: 'RS256',
       expiresIn: '7d'
     });
+    console.log("JWT token generated.");
     res.status(201).json({ token, user: { email: user.email } });
   } catch (err) {
+    console.error("Server error during signup:", err);
     res.status(500).json({ msg: "Server error" });
   }
 });

@@ -22,15 +22,17 @@ export const apiCall = async (endpoint, options = {}) => {
   try {
     const response = await fetch(url, config);
     const data = await response.json();
-    
+    if (!response.ok) {
+      throw new Error(data.message || `HTTP error! status: ${response.status}`);
+    }
     return {
       ok: response.ok,
       status: response.status,
       data,
     };
   } catch (error) {
-    console.error('API call failed:', error);
-    throw new Error('Network error. Please check your connection and try again.');
+    console.error("API call failed:", error);
+    throw error;
   }
 };
 

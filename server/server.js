@@ -16,13 +16,13 @@ app.use("/api/auth", require("./routes/auth"));
 app.use("/api/store", require("./routes/store"));
 app.use("/api/password", require("./routes/forgot"));
 
+// Start Server
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));
+
 // Serve frontend (React build) in production
 app.use(express.static(path.join(__dirname, "../client/dist")));
 
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "../client/dist/index.html"));
 });
-
-// Start Server
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));
