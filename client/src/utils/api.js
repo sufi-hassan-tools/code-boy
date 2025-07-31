@@ -1,4 +1,7 @@
-const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+// Use relative URL by default so frontend and backend can run on the same host
+// without needing environment configuration. A custom base URL can still be
+// provided via VITE_API_BASE_URL when required.
+const BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
 
 export const apiCall = async (endpoint, options = {}) => {
   const url = `${BASE_URL}${endpoint}`;
@@ -32,7 +35,11 @@ export const apiCall = async (endpoint, options = {}) => {
     };
   } catch (error) {
     console.error("API call failed:", error);
-    throw error;
+    return {
+      ok: false,
+      status: 0,
+      data: { msg: error.message },
+    };
   }
 };
 
