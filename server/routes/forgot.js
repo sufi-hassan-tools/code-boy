@@ -17,7 +17,7 @@ router.post("/forgot-password", async (req, res) => {
     resetTokens[email] = token;
 
     const resetLink = `https://your-frontend-domain/reset-password/${token}`;
-    const transporter = nodemailer.createTransporter({
+    const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
         user: process.env.RESET_EMAIL,
