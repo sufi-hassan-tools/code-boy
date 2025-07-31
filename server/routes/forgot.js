@@ -7,7 +7,8 @@ const router = express.Router();
 
 let resetTokens = {};
 
-router.post("/forgot-password", async (req, res) => {
+// support both /forgot-password (documented) and /forgot (legacy)
+router.post(["/forgot-password", "/forgot"], async (req, res) => {
   const { email } = req.body;
   try {
     const user = await User.findOne({ email });
@@ -16,24 +17,35 @@ router.post("/forgot-password", async (req, res) => {
     const token = crypto.randomBytes(32).toString("hex");
     resetTokens[email] = token;
 
-    const resetLink = `https://your-frontend-domain/reset-password/${token}`;
+    // Build password reset link using optional CLIENT_URL env or default localhost
+    const baseUrl = process.env.CLIENT_URL || "http://localhost:5173";
+    const resetLink = `${baseUrl}/reset-password/${token}`;
+
+    // Ensure email credentials are defined
+    const { RESET_EMAIL, RESET_PASS } = process.env;
+    if (!RESET_EMAIL || !RESET_PASS) {
+      console.error("Password reset email credentials missing");
+      return res.status(500).json({ msg: "Email configuration missing" });
+    }
+
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
-        user: process.env.RESET_EMAIL,
-        pass: process.env.RESET_PASS
-      }
+        user: RESET_EMAIL,
+        pass: RESET_PASS,
+      },
     });
 
     await transporter.sendMail({
       to: email,
       subject: "Reset Your Password",
-      html: `<p>Click below to reset password:</p><a href="${resetLink}">${resetLink}</a>`
+      html: `<p>Click below to reset password:</p><a href="${resetLink}">${resetLink}</a>`,
     });
 
     res.json({ msg: "Reset link sent" });
   } catch (err) {
-    res.status(500).json({ msg: "Server error" });
+    console.error("Error sending reset email:", err);
+    res.status(500).json({ msg: "Failed to send reset email" });
   }
 });
 
@@ -50,7 +62,8 @@ router.post("/reset-password/:token", async (req, res) => {
     delete resetTokens[email];
     res.json({ msg: "Password reset successful" });
   } catch (err) {
-    res.status(500).json({ msg: "Server error" });
+    console.error("Error resetting password:", err);
+    res.status(500).json({ msg: "Failed to reset password" });
   }
 });
 
