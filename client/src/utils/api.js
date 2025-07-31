@@ -1,7 +1,10 @@
-// Use relative URL by default so frontend and backend can run on the same host
-// without needing environment configuration. A custom base URL can still be
-// provided via VITE_API_BASE_URL when required.
-const BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
+// Resolve API base URL automatically. In production the frontend and backend
+// are served from the same origin so we can use a relative URL. During
+// development the Vite dev server runs on a different port, so default to the
+// Express server running on localhost unless a custom `VITE_API_BASE_URL` is
+// provided.
+const BASE_URL =
+  import.meta.env.VITE_API_BASE_URL || (import.meta.env.DEV ? 'http://localhost:5000' : '');
 
 export const apiCall = async (endpoint, options = {}) => {
   const url = `${BASE_URL}${endpoint}`;
