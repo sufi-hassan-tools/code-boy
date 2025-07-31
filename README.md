@@ -21,8 +21,8 @@ Create a `.env` file inside the `server/` directory with the following
 variable:
 
 ```
-MONGO_URI=mongodb+srv://hassansufims7-8:hassansufims7-8@cluster0.h5vbmbs.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
+MONGODB_URI=mongodb+srv://hassansufims7-8:hassansufims7-8@cluster0.h5vbmbs.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
 ```
 
-When deploying to [Render](https://render.com), add the same `MONGO_URI`
+When deploying to [Render](https://render.com), add the same `MONGODB_URI`
 value in the **Environment** settings for your service.
