@@ -1,5 +1,6 @@
 const express = require("express");
 const jwt = require("jsonwebtoken");
+const { getPublicKey } = require("../config/jwt");
 const Store = require("../models/Store");
 const User = require("../models/User");
 const router = express.Router();
@@ -10,7 +11,7 @@ const protect = (req, res, next) => {
   if (!token) return res.status(401).json({ msg: "No token" });
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = jwt.verify(token, getPublicKey(), { algorithm: 'RS256' });
     req.userId = decoded.id;
     next();
   } catch {

@@ -97,7 +97,8 @@ Create a `.env` file in the `server` directory with:
 
 ```env
 MONGODB_URI=mongodb://localhost:27017/codeboy
-JWT_SECRET=your_jwt_secret_key_here
+JWT_PRIVATE_KEY_BASE64=base64_encoded_private_key_here
+JWT_PUBLIC_KEY_BASE64=base64_encoded_public_key_here
 RESET_EMAIL=your_email@gmail.com
 RESET_PASS=your_email_password
 PORT=5000

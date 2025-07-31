@@ -1,6 +1,7 @@
 node_modules/
 .env
 .env.*
+!server/.env
 
 # Logs
 logs
@@ -14,3 +15,7 @@ client/node_modules/
 
 # OS
 .DS_Store
+
+# Key files (not needed in repo)
+*.pem
+*.base64
