@@ -18,10 +18,13 @@ See `client/package.json` and `server/package.json` for dependencies.
 ## Environment Variables
 
 Create a `.env` file inside the `server/` directory with the following
-variable:
+variables:
 
 ```
 MONGODB_URI=mongodb+srv://hassansufims7-8:hassansufims7-8@cluster0.h5vbmbs.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
+RESET_EMAIL=your_email@gmail.com
+RESET_PASS=your_email_password
+FRONTEND_URL=https://moohaarapp.onrender.com
 ```
 
 When deploying to [Render](https://render.com), add the same `MONGODB_URI`
