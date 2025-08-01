@@ -20,8 +20,8 @@ router.post(["/forgot-password", "/forgot"], async (req, res) => {
     const token = crypto.randomBytes(32).toString("hex");
     resetTokens[email] = token;
 
-    // Build password reset link using optional CLIENT_URL env or default localhost
-    const baseUrl = process.env.CLIENT_URL || "http://localhost:5173";
+    // Build password reset link using optional FRONTEND_URL env or default localhost
+    const baseUrl = process.env.FRONTEND_URL || "http://localhost:5173";
     const resetLink = `${baseUrl}/reset-password/${token}`;
 
     // Ensure email credentials are defined
