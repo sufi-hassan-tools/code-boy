@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { apiCall } from '../utils/api';
 
@@ -15,6 +15,23 @@ export default function CreateStore() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      navigate('/login');
+      return;
+    }
+    const checkStore = async () => {
+      const result = await apiCall('/api/store/me', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (result.ok) {
+        navigate('/dashboard');
+      }
+    };
+    checkStore();
+  }, [navigate]);
 
   const handleChange = (e) => {
     setFormData({

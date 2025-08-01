@@ -19,15 +19,46 @@ const protect = (req, res, next) => {
   }
 };
 
-// Create Store
+// Create Store - only one store per user
 router.post("/create", protect, async (req, res) => {
   const storeData = { ...req.body, user: req.userId };
   try {
+    const existing = await Store.findOne({ user: req.userId });
+    if (existing) {
+      return res.status(400).json({ msg: "Store already exists" });
+    }
+
     const store = await Store.create(storeData);
     await User.findByIdAndUpdate(req.userId, { storeCreated: true });
     res.status(201).json({ msg: "Store created", store });
   } catch (err) {
     res.status(500).json({ msg: "Error creating store" });
+  }
+});
+
+// Get current user's store
+router.get("/me", protect, async (req, res) => {
+  try {
+    const store = await Store.findOne({ user: req.userId });
+    if (!store) return res.status(404).json({ msg: "No store" });
+    res.json(store);
+  } catch (err) {
+    res.status(500).json({ msg: "Error fetching store" });
+  }
+});
+
+// Update store
+router.put("/update", protect, async (req, res) => {
+  try {
+    const store = await Store.findOneAndUpdate(
+      { user: req.userId },
+      req.body,
+      { new: true }
+    );
+    if (!store) return res.status(404).json({ msg: "No store" });
+    res.json(store);
+  } catch (err) {
+    res.status(500).json({ msg: "Error updating store" });
   }
 });
 
