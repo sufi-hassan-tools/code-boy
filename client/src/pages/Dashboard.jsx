@@ -129,12 +129,9 @@ export default function Dashboard() {
           <div className="border-4 border-dashed border-gray-200 rounded-lg p-8">
             <div className="text-center">
               <h2 className="text-2xl font-bold text-gray-900 mb-2">
-                Welcome to your Dashboard!
+                {user?.name ? `${user.name} welcome to Moohaar!` : 'Welcome to Moohaar!'}
               </h2>
-              <p className="text-gray-600">{user?.name ? `${user.name} - ${user.email}` : user?.email}</p>
-              <p className="text-gray-600 mb-8">
-                You have successfully logged in. This is your protected dashboard area.
-              </p>
+              <p className="text-gray-600 mb-8">Let's build your store.</p>
               
               <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
                 {!store && (
