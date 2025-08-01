@@ -69,7 +69,7 @@ export default function Profile() {
   return (
     <div className="max-w-xl mx-auto p-4 space-y-6">
       <h2 className="text-2xl font-semibold">Profile</h2>
-      <p className="text-gray-600">{user?.name ? `${user.name} - ${user.email}` : user?.email}</p>
+      <p className="text-gray-600">{user?.name || user?.email}</p>
 
       {store ? (
         <form onSubmit={handleSubmit} className="space-y-4">
