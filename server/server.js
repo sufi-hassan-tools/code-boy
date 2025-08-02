@@ -14,6 +14,7 @@ app.use(express.json());
 // API Routes
 app.use("/api/auth", require("./routes/auth"));
 app.use("/api/store", require("./routes/store"));
+app.use("/api/user", require("./routes/user"));
 app.use("/api/password", require("./routes/forgot"));
 
 // Start Server
