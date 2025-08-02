@@ -1,23 +1,8 @@
 const express = require("express");
-const jwt = require("jsonwebtoken");
-const { getPublicKey } = require("../config/jwt");
 const Theme = require("../models/Theme");
 const Store = require("../models/Store");
+const protect = require("../middleware/auth");
 const router = express.Router();
-
-// Middleware to protect routes
-const protect = (req, res, next) => {
-  const token = req.headers.authorization?.split(" ")[1];
-  if (!token) return res.status(401).json({ msg: "No token" });
-
-  try {
-    const decoded = jwt.verify(token, getPublicKey(), { algorithm: 'RS256' });
-    req.userId = decoded.id;
-    next();
-  } catch {
-    res.status(401).json({ msg: "Invalid token" });
-  }
-};
 
 // Get all available themes (marketplace)
 router.get("/marketplace", async (req, res) => {
@@ -32,7 +17,7 @@ router.get("/marketplace", async (req, res) => {
 // Get user's installed themes
 router.get("/my-themes", protect, async (req, res) => {
   try {
-    const store = await Store.findOne({ user: req.userId });
+    const store = await Store.findOne({ user: req.user._id });
     if (!store) return res.status(404).json({ msg: "Store not found" });
 
     const themes = await Theme.find({ store: store._id });
@@ -45,7 +30,7 @@ router.get("/my-themes", protect, async (req, res) => {
 // Get active theme
 router.get("/active", protect, async (req, res) => {
   try {
-    const store = await Store.findOne({ user: req.userId });
+    const store = await Store.findOne({ user: req.user._id });
     if (!store) return res.status(404).json({ msg: "Store not found" });
 
     const activeTheme = await Theme.findOne({ store: store._id, isActive: true });
@@ -60,7 +45,7 @@ router.get("/active", protect, async (req, res) => {
 // Install theme
 router.post("/install/:themeId", protect, async (req, res) => {
   try {
-    const store = await Store.findOne({ user: req.userId });
+    const store = await Store.findOne({ user: req.user._id });
     if (!store) return res.status(404).json({ msg: "Store not found" });
 
     const originalTheme = await Theme.findById(req.params.themeId);
@@ -84,7 +69,7 @@ router.post("/install/:themeId", protect, async (req, res) => {
 // Activate theme
 router.put("/activate/:themeId", protect, async (req, res) => {
   try {
-    const store = await Store.findOne({ user: req.userId });
+    const store = await Store.findOne({ user: req.user._id });
     if (!store) return res.status(404).json({ msg: "Store not found" });
 
     // Deactivate all themes for this store
@@ -108,12 +93,12 @@ router.put("/activate/:themeId", protect, async (req, res) => {
 // Update theme settings
 router.put("/settings/:themeId", protect, async (req, res) => {
   try {
-    const store = await Store.findOne({ user: req.userId });
+    const store = await Store.findOne({ user: req.user._id });
     if (!store) return res.status(404).json({ msg: "Store not found" });
 
     const theme = await Theme.findOneAndUpdate(
       { _id: req.params.themeId, store: store._id },
-      { 
+      {
         settings: req.body.settings,
         updatedAt: new Date()
       },
@@ -131,7 +116,7 @@ router.put("/settings/:themeId", protect, async (req, res) => {
 // Upload custom theme
 router.post("/upload", protect, async (req, res) => {
   try {
-    const store = await Store.findOne({ user: req.userId });
+    const store = await Store.findOne({ user: req.user._id });
     if (!store) return res.status(404).json({ msg: "Store not found" });
 
     const themeData = {
@@ -150,7 +135,7 @@ router.post("/upload", protect, async (req, res) => {
 // Delete theme
 router.delete("/:themeId", protect, async (req, res) => {
   try {
-    const store = await Store.findOne({ user: req.userId });
+    const store = await Store.findOne({ user: req.user._id });
     if (!store) return res.status(404).json({ msg: "Store not found" });
 
     const theme = await Theme.findOne({ _id: req.params.themeId, store: store._id });
