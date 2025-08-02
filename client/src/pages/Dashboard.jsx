@@ -1,51 +1,64 @@
 import { useState, useEffect } from 'react';
-
-// Mock API function for demonstration
-const apiCall = async (endpoint, options = {}) => {
-  // Simulate API delay
-  await new Promise(resolve => setTimeout(resolve, 1000));
-  
-  if (endpoint === '/api/store/me') {
-    return {
-      ok: true,
-      data: {
-        storeName: "My Awesome Store",
-        storeWhatsapp: "+92-300-1234567",
-        storeAddress: "123 Main Street, Karachi, Pakistan"
-      }
-    };
-  }
-  return { ok: false };
-};
+import { useNavigate } from 'react-router-dom';
+import { apiCall } from '../utils/api';
 
 export default function Dashboard() {
-  const [user, setUser] = useState({ name: "Ahmad Ali" }); // Mock user data
+  const navigate = useNavigate();
+  const [user, setUser] = useState(() => {
+    const stored = localStorage.getItem('user');
+    return stored ? JSON.parse(stored) : null;
+  });
   const [store, setStore] = useState(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Mock authentication check
-    const fetchStore = async () => {
-      const result = await apiCall('/api/store/me');
-      if (result.ok) {
-        setStore(result.data);
+    const token = localStorage.getItem('token');
+    if (!token) {
+      navigate('/login');
+      return;
+    }
+
+    const fetchData = async () => {
+      const [userRes, storeRes] = await Promise.all([
+        apiCall('/api/user/me', { headers: { Authorization: `Bearer ${token}` } }),
+        apiCall('/api/store/me', { headers: { Authorization: `Bearer ${token}` } }),
+      ]);
+
+      if (userRes.ok) {
+        setUser(userRes.data);
+        localStorage.setItem('user', JSON.stringify(userRes.data));
+      } else if (userRes.status === 401) {
+        alert(userRes.data.msg || 'Please login again');
+        navigate('/login');
+        return;
       }
+
+      if (storeRes.ok) {
+        setStore(storeRes.data);
+      } else if (storeRes.status === 404) {
+        setStore(null);
+      } else if (storeRes.status === 401) {
+        alert(storeRes.data.msg || 'Please login again');
+        navigate('/login');
+        return;
+      }
+
       setLoading(false);
     };
 
-    fetchStore();
-  }, []);
+    fetchData();
+  }, [navigate]);
 
   const handleLogout = () => {
-    console.log('Logging out...');
-    alert('Logout functionality would redirect to login page');
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    navigate('/login');
   };
 
   const handleNavigation = (path) => {
-    console.log(`Navigating to: ${path}`);
     setMenuOpen(false);
-    alert(`Would navigate to: ${path}`);
+    navigate(path);
   };
 
   if (loading) {
@@ -173,7 +186,7 @@ export default function Dashboard() {
               </div>
 
               {/* Quick Stats */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-6 mb-8">
                 <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
                   <div className="flex items-center">
                     <div className="w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center">
@@ -214,7 +227,7 @@ export default function Dashboard() {
               </div>
 
               {/* Action Cards */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
                 {!store ? (
                   <div className="bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl shadow-lg p-6 text-white">
                     <div className="flex items-center mb-4">
