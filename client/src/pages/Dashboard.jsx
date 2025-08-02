@@ -55,7 +55,7 @@ export default function Dashboard() {
       {/* Sidebar for desktop */}
       <aside
         className={`hidden md:flex flex-col w-56 bg-white border-r shadow-sm p-4 space-y-4 ${
-          menuOpen ? '' : ''
+          menuOpen ? '' : 'block'
         }`}
       >
         <Link to="/dashboard" className="hover:text-accent">
@@ -125,70 +125,69 @@ export default function Dashboard() {
         </nav>
 
         <main className="max-w-7xl mx-auto py-6 px-4 flex-1">
-        <div className="px-4 py-6 sm:px-0">
-          <div className="border-4 border-dashed border-gray-200 rounded-lg p-8">
-            <div className="text-center">
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">
-                {user?.name ? `${user.name} welcome to Moohaar!` : 'Welcome to Moohaar!'}
-              </h2>
-              <p className="text-gray-600 mb-8">Let's build your store.</p>
-              
-              <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
-                {!store && (
+          <div className="px-4 py-6 sm:px-0">
+            <div className="border-4 border-dashed border-gray-200 rounded-lg p-8">
+              <div className="text-center">
+                <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                  {user?.name ? `${user.name} welcome to Moohaar!` : 'Welcome to Moohaar!'}
+                </h2>
+                <p className="text-gray-600 mb-8">Let's build your store.</p>
+
+                <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
+                  {!store && (
+                    <div className="bg-white p-6 rounded-lg shadow">
+                      <h3 className="text-lg font-medium text-gray-900 mb-2">Create Store</h3>
+                      <p className="text-gray-600 mb-4">Set up your online store</p>
+                      <button
+                        onClick={() => navigate('/create-store')}
+                        className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md text-sm font-medium"
+                      >
+                        Get Started
+                      </button>
+                    </div>
+                  )}
+                  {store && (
+                    <div className="bg-white p-6 rounded-lg shadow text-left">
+                      <h3 className="text-lg font-medium text-gray-900 mb-2">My Store</h3>
+                      <p className="text-gray-600 mb-1">{store.storeName}</p>
+                      <p className="text-gray-600 mb-1">WhatsApp: {store.storeWhatsapp}</p>
+                      <p className="text-gray-600 mb-4">{store.storeAddress}</p>
+                      <Link
+                        to="/profile"
+                        className="text-indigo-600 hover:underline text-sm"
+                      >
+                        Edit Store Info
+                      </Link>
+                    </div>
+                  )}
+
                   <div className="bg-white p-6 rounded-lg shadow">
-                    <h3 className="text-lg font-medium text-gray-900 mb-2">Create Store</h3>
-                    <p className="text-gray-600 mb-4">Set up your online store</p>
-                    <button
-                      onClick={() => navigate('/create-store')}
-                      className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md text-sm font-medium"
-                    >
-                      Get Started
-                    </button>
-                  </div>
-                )}
-                {store && (
-                  <div className="bg-white p-6 rounded-lg shadow text-left">
-                    <h3 className="text-lg font-medium text-gray-900 mb-2">My Store</h3>
-                    <p className="text-gray-600 mb-1">{store.storeName}</p>
-                    <p className="text-gray-600 mb-1">WhatsApp: {store.storeWhatsapp}</p>
-                    <p className="text-gray-600 mb-4">{store.storeAddress}</p>
+                    <h3 className="text-lg font-medium text-gray-900 mb-2">Profile</h3>
+                    <p className="text-gray-600 mb-4">Manage your account settings</p>
                     <Link
                       to="/profile"
-                      className="text-indigo-600 hover:underline text-sm"
+                      className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-md text-sm font-medium inline-block"
                     >
-                      Edit Store Info
+                      View Profile
                     </Link>
                   </div>
-                )}
 
-                <div className="bg-white p-6 rounded-lg shadow">
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">Profile</h3>
-                  <p className="text-gray-600 mb-4">Manage your account settings</p>
-                  <Link
-                    to="/profile"
-                    className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-md text-sm font-medium inline-block"
-                  >
-                    View Profile
-                  </Link>
-                </div>
-
-                <div className="bg-white p-6 rounded-lg shadow">
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">Analytics</h3>
-                  <p className="text-gray-600 mb-4">View your store analytics</p>
-                  <Link
-                    to="/analytics"
-                    className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md text-sm font-medium inline-block"
-                  >
-                    View Analytics
-                  </Link>
+                  <div className="bg-white p-6 rounded-lg shadow">
+                    <h3 className="text-lg font-medium text-gray-900 mb-2">Analytics</h3>
+                    <p className="text-gray-600 mb-4">View your store analytics</p>
+                    <Link
+                      to="/analytics"
+                      className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md text-sm font-medium inline-block"
+                    >
+                      View Analytics
+                    </Link>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-      </main>
+        </main>
+      </div>
     </div>
-  </div>
   );
 }
-
