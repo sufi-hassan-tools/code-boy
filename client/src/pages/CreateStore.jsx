@@ -57,7 +57,7 @@ export default function CreateStore() {
 
       if (result.ok) {
         alert('Store created successfully!');
-        navigate('/dashboard');
+        navigate('/themes');
       } else {
         setError(result.data.msg || 'Store creation failed. Please try again.');
       }

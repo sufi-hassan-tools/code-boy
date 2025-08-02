@@ -8,6 +8,8 @@ const StoreSchema = new mongoose.Schema({
   storeCity: String,
   storeAddress: String,
   businessCategory: String,
+  // Selected theme identifier
+  theme: String,
 });
 module.exports = mongoose.model('Store', StoreSchema);
 

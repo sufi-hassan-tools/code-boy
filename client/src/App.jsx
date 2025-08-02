@@ -8,6 +8,7 @@ import Analytics from './pages/Analytics';
 import CreateStore from './pages/CreateStore';
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
+import ThemeStore from './pages/ThemeStore';
 
 export default function App() {
   return (
@@ -20,6 +21,7 @@ export default function App() {
         <Route path="/profile" element={<Profile />} />
         <Route path="/analytics" element={<Analytics />} />
         <Route path="/create-store" element={<CreateStore />} />
+        <Route path="/themes" element={<ThemeStore />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password/:token" element={<ResetPassword />} />
       </Routes>

@@ -62,5 +62,20 @@ router.put("/update", protect, async (req, res) => {
   }
 });
 
+// Update store theme
+router.put("/theme", protect, async (req, res) => {
+  try {
+    const store = await Store.findOneAndUpdate(
+      { user: req.userId },
+      { theme: req.body.theme },
+      { new: true }
+    );
+    if (!store) return res.status(404).json({ msg: "No store" });
+    res.json({ msg: "Theme updated", store });
+  } catch (err) {
+    res.status(500).json({ msg: "Error updating theme" });
+  }
+});
+
 module.exports = router;
 
