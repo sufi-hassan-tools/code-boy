@@ -1,0 +1,26 @@
+{
+  "name": "moohaar-backend",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "start": "node src/server.js",
+    "lint": "eslint .",
+    "test": "echo \"No tests specified\" && exit 0"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "liquidjs": "^10.9.1",
+    "mongoose": "^8.3.1",
+    "multer": "^1.4.5-lts.1",
+    "unzipper": "^0.10.11"
+  },
+  "devDependencies": {
+    "eslint": "^8.57.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "^2.29.1",
+    "eslint-config-prettier": "^9.1.0",
+    "prettier": "^3.2.5",
+    "pm2": "^5.3.0"
+  }
+}
