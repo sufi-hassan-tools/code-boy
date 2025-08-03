@@ -16,6 +16,10 @@ app.use("/api/auth", require("./routes/auth"));
 app.use("/api/store", require("./routes/store"));
 app.use("/api/users", require("./routes/user"));
 app.use("/api/password", require("./routes/forgot"));
+app.use("/api/upload", require("./routes/upload"));
+
+// Serve uploaded images
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // Start Server
 const PORT = process.env.PORT || 5000;

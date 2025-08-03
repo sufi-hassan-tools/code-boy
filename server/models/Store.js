@@ -10,6 +10,8 @@ const StoreSchema = new mongoose.Schema({
   businessCategory: String,
   // Selected theme identifier
   theme: String,
+  bannerImage: String,
+  logoImage: String,
 });
 module.exports = mongoose.model('Store', StoreSchema);
 

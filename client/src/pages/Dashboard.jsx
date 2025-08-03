@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import ImageUpload from '../components/ImageUpload';
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -10,7 +11,13 @@ export default function Dashboard() {
   const [profileModal, setProfileModal] = useState(false);
   const [storeModal, setStoreModal] = useState(false);
   const [profileForm, setProfileForm] = useState({ name: '', email: '' });
-  const [storeForm, setStoreForm] = useState({ storeName: '', storeWhatsapp: '', storeAddress: '' });
+  const [storeForm, setStoreForm] = useState({
+    storeName: '',
+    storeWhatsapp: '',
+    storeAddress: '',
+    bannerImage: '',
+    logoImage: '',
+  });
   const [saving, setSaving] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -39,7 +46,9 @@ export default function Dashboard() {
         setStoreForm({
           storeName: storeRes.data.storeName || '',
           storeWhatsapp: storeRes.data.storeWhatsapp || '',
-          storeAddress: storeRes.data.storeAddress || ''
+          storeAddress: storeRes.data.storeAddress || '',
+          bannerImage: storeRes.data.bannerImage || '',
+          logoImage: storeRes.data.logoImage || '',
         });
       } catch (err) {
         if (err.response && err.response.status === 404) {
@@ -246,6 +255,16 @@ export default function Dashboard() {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-lg w-full h-full md:h-auto md:w-96 p-6 overflow-y-auto">
             <h2 className="text-xl font-semibold mb-4">{store ? 'Edit Store' : 'Create Store'}</h2>
+            <ImageUpload
+              label="Banner Image"
+              value={storeForm.bannerImage}
+              onChange={(url) => setStoreForm({ ...storeForm, bannerImage: url })}
+            />
+            <ImageUpload
+              label="Logo Image"
+              value={storeForm.logoImage}
+              onChange={(url) => setStoreForm({ ...storeForm, logoImage: url })}
+            />
             <label className="block mb-2 text-sm">Store Name</label>
             <input
               className="w-full border p-2 rounded mb-4"
