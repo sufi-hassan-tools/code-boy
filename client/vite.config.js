@@ -10,6 +10,9 @@ export default defineConfig({
       '/api': 'http://localhost:5000'
     }
   },
+  optimizeDeps: {
+    include: ['browser-image-compression']
+  },
   plugins: [
     react(),
     VitePWA({
