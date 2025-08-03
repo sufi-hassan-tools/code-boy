@@ -34,8 +34,21 @@ export const uploadTheme = async (req, res) => {
 // GET /api/themes
 export const listThemes = async (req, res) => {
   try {
-    const themes = await Theme.find();
-    return res.json(themes);
+    // Pagination: offset and limit with defaults 0 and 2
+    let { offset = 0, limit = 2 } = req.query;
+    offset = parseInt(offset, 10);
+    limit = parseInt(limit, 10);
+
+    if (Number.isNaN(offset) || Number.isNaN(limit)) {
+      return res.status(400).json({ message: 'offset and limit must be integers' });
+    }
+
+    const [themes, total] = await Promise.all([
+      Theme.find().skip(offset).limit(limit),
+      Theme.countDocuments(),
+    ]);
+
+    return res.json({ themes, total, offset, limit });
   } catch (err) {
     return res.status(500).json({ message: err.message });
   }
@@ -49,7 +62,18 @@ export const previewTheme = async (req, res) => {
     if (!theme) {
       return res.status(404).json({ message: 'Theme not found' });
     }
-    const html = await engine.renderFile(`${theme._id}/templates/index`, { title: 'Preview' });
+
+    const templatePath = path.join(theme.paths.root, 'templates', 'index.liquid');
+    if (!fs.existsSync(templatePath)) {
+      return res.status(404).json({ message: 'Template not found' });
+    }
+
+    const template = fs.readFileSync(templatePath, 'utf-8');
+    const context = {
+      store: { name: 'Preview Store', logo: '/logo.png' },
+      products: [{ name: 'Demo', price: 0, image: '/demo.jpg' }],
+    };
+    const html = await engine.parseAndRender(template, context);
     return res.send(html);
   } catch (err) {
     return res.status(500).json({ message: err.message });
