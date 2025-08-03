@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { apiCall } from '../utils/api';
+import ImageUpload from '../components/ImageUpload';
 
 export default function CreateStore() {
   const [formData, setFormData] = useState({
@@ -10,7 +11,9 @@ export default function CreateStore() {
     storeWhatsapp: '',
     storeCity: '',
     storeAddress: '',
-    businessCategory: ''
+    businessCategory: '',
+    bannerImage: '',
+    logoImage: ''
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -81,6 +84,17 @@ export default function CreateStore() {
                   {error}
                 </div>
               )}
+
+              <ImageUpload
+                label="Banner Image"
+                value={formData.bannerImage}
+                onChange={(url) => setFormData({ ...formData, bannerImage: url })}
+              />
+              <ImageUpload
+                label="Logo Image"
+                value={formData.logoImage}
+                onChange={(url) => setFormData({ ...formData, logoImage: url })}
+              />
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
