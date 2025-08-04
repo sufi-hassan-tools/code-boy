@@ -1,30 +1,72 @@
 import fs from 'fs';
+import fsp from 'fs/promises';
 import path from 'path';
+import unzipper from 'unzipper';
 import Theme from '../models/theme.model.js';
 import config from '../config/index.js';
-import unzipTheme from '../utils/unzip.util.js';
 import engine from '../services/liquid.service.js';
 
-// POST /api/themes/upload
-export const uploadTheme = async (req, res) => {
+// POST /api/themes
+export const createTheme = async (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ message: 'No file uploaded' });
     }
-    const theme = new Theme();
-    const themeDir = path.join(config.THEMES_PATH, theme._id.toString());
-    await unzipTheme(req.file.path, themeDir);
 
+    // Prepare paths using a generated theme ID
+    const theme = new Theme();
+    const themeDir = path.join(config.THEMES_PATH, theme.id);
+    await fsp.mkdir(themeDir, { recursive: true });
+
+    // Unzip uploaded file into the theme directory
+    await fs
+      .createReadStream(req.file.path)
+      .pipe(unzipper.Extract({ path: themeDir }))
+      .promise();
+
+    // Validate required directories
+    const requiredDirs = ['layout', 'templates', 'assets'];
+    try {
+      requiredDirs.forEach((dir) => {
+        const dirPath = path.join(themeDir, dir);
+        if (!fs.existsSync(dirPath)) {
+          throw new Error(`${dir} folder missing in theme`);
+        }
+      });
+    } catch (validationErr) {
+      return res.status(400).json({ message: validationErr.message });
+    }
+
+    // Validate config.json
     const configPath = path.join(themeDir, 'config.json');
     if (!fs.existsSync(configPath)) {
       return res.status(400).json({ message: 'config.json missing in theme' });
     }
+
     const meta = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
-    theme.name = meta.name || theme._id.toString();
-    theme.author = meta.author;
+    try {
+      const requiredFields = ['name', 'handle', 'version', 'description', 'previewImage'];
+      requiredFields.forEach((field) => {
+        if (typeof meta[field] !== 'string' || !meta[field]) {
+          throw new Error(`Invalid config.json: missing ${field}`);
+        }
+      });
+    } catch (validationErr) {
+      return res.status(400).json({ message: validationErr.message });
+    }
+
+    // Persist theme metadata
+    theme.name = meta.name;
+    theme.version = meta.version;
+    theme.description = meta.description;
+    theme.previewImage = meta.previewImage;
     theme.paths = { root: themeDir };
     theme.metadata = meta;
     await theme.save();
+
+    // Clean up uploaded zip
+    await fsp.unlink(req.file.path);
+
     return res.status(201).json(theme);
   } catch (err) {
     return res.status(500).json({ message: err.message });
