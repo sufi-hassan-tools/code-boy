@@ -1,6 +1,8 @@
 import express from 'express';
-import fs from 'fs';
 import path from 'path';
+import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
+import { access, readFile } from 'fs/promises';
 import config from './config/index.js';
 import connectDB from './services/db.service.js';
 import engine from './services/liquid.service.js';
@@ -12,7 +14,37 @@ import healthRoutes from './routes/health.routes.js';
 
 const app = express();
 
+// Apply secure HTTP headers
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        styleSrc: ["'self'", "'unsafe-inline'"],
+        scriptSrc: ["'self'"],
+        imgSrc: ["'self'", 'data:', 'https:'],
+      },
+    },
+  }),
+);
+
+// Parse JSON bodies
 app.use(express.json());
+
+// Rate limiters for auth and uploads
+const authLimiter = rateLimit({
+  windowMs: 15 * 60e3, // 15 minutes
+  max: 5,
+  message: 'Too many login attempts',
+});
+const uploadLimiter = rateLimit({
+  windowMs: 60 * 60e3, // 1 hour
+  max: 10,
+  message: 'Too many uploads',
+});
+
+app.use('/api/auth', authLimiter);
+app.use('/api/themes', uploadLimiter);
 
 // Domain-mapping middleware attaches store based on hostname
 app.use(async (req, res, next) => {
@@ -59,15 +91,25 @@ app.get('/*', async (req, res) => {
       templateFile = 'product.liquid';
     }
 
+    // Resolve template path and ensure it exists
     let templatePath = path.join(theme.paths.root, 'templates', templateFile);
-    if (!fs.existsSync(templatePath) && templateFile === 'product.liquid') {
-      templatePath = path.join(theme.paths.root, 'templates', 'index.liquid');
-    }
-    if (!fs.existsSync(templatePath)) {
-      return res.status(404).send('Template not found');
+    try {
+      await access(templatePath);
+    } catch (err) {
+      if (templateFile === 'product.liquid') {
+        templatePath = path.join(theme.paths.root, 'templates', 'index.liquid');
+        try {
+          await access(templatePath);
+        } catch (innerErr) {
+          return res.status(404).send('Template not found');
+        }
+      } else {
+        return res.status(404).send('Template not found');
+      }
     }
 
-    const template = fs.readFileSync(templatePath, 'utf-8');
+    // Asynchronously read template file
+    const template = await readFile(templatePath, 'utf-8');
     const html = await engine.parseAndRender(template, {
       store,
       products: store.products || [],
