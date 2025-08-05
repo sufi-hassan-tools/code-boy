@@ -3,8 +3,9 @@ export default function ThemeCard({ theme, onPreview, onSelect }) {
     <div className="bg-white rounded shadow p-4 flex flex-col space-y-2">
       <img
         src={theme.previewImage}
-        alt={theme.name}
-        className="w-full h-48 object-cover rounded"
+        alt={`${theme.name} preview`}
+        loading="lazy" // Lazy-load images for better performance
+        className="w-full h-auto rounded"
       />
       <h3 className="text-lg font-semibold">{theme.name}</h3>
       <p className="text-sm text-gray-600 flex-1">{theme.description}</p>
