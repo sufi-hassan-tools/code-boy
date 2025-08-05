@@ -14,4 +14,9 @@ const StoreSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+// Helpful query performance indexes
+StoreSchema.index({ handle: 1 });
+StoreSchema.index({ customDomain: 1 });
+StoreSchema.index({ ownerId: 1 });
+
 export default mongoose.model('Store', StoreSchema);

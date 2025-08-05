@@ -1,7 +1,8 @@
 import Store from '../models/store.model.js';
 
 // POST /api/store/:storeId/theme
-export const setActiveTheme = async (req, res) => {
+// Sets a store's active theme reference
+export const setActiveTheme = async (req, res, next) => {
   try {
     const { storeId } = req.params;
     const { themeId } = req.body;
@@ -12,7 +13,7 @@ export const setActiveTheme = async (req, res) => {
     // 204 indicates success with no content
     return res.status(204).send();
   } catch (err) {
-    return res.status(500).json({ message: err.message });
+    return next(err);
   }
 };
 

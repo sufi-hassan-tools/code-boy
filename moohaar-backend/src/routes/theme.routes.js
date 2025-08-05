@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import multer from 'multer';
 import path from 'path';
+import Joi from 'joi';
 import config from '../config/index.js';
 import {
   createTheme,
@@ -10,8 +11,17 @@ import {
   deleteTheme,
 } from '../controllers/theme.controller.js';
 import { auth, authorizeAdmin } from '../middleware/auth.middleware.js';
+import validate from '../middleware/validate.js';
 
 const router = Router();
+
+// Joi schema for theme metadata validation
+const themeSchema = Joi.object({
+  handle: Joi.string().required(),
+  version: Joi.string().required(),
+  description: Joi.string().required(),
+  previewImage: Joi.string().required(),
+});
 
 // Multer configuration: single ZIP up to 5MB
 const upload = multer({
@@ -22,28 +32,30 @@ const upload = multer({
     if (ext === '.zip') {
       cb(null, true);
     } else {
-      cb(new Error('Only ZIP files are allowed'));
+      const error = new Error('Only ZIP files are allowed');
+      error.name = 'ValidationError';
+      cb(error);
     }
   },
 });
 
 // Admin create theme
-router.post('/', auth, authorizeAdmin, (req, res) => {
+router.post('/', auth, authorizeAdmin, validate(themeSchema), (req, res, next) => {
   upload.single('file')(req, res, (err) => {
     if (err) {
-      return res.status(400).json({ message: err.message });
+      return next(err);
     }
-    return createTheme(req, res);
+    return createTheme(req, res, next);
   });
 });
 
 // Admin update theme
-router.put('/:id', auth, authorizeAdmin, (req, res) => {
+router.put('/:id', auth, authorizeAdmin, validate(themeSchema), (req, res, next) => {
   upload.single('file')(req, res, (err) => {
     if (err) {
-      return res.status(400).json({ message: err.message });
+      return next(err);
     }
-    return updateTheme(req, res);
+    return updateTheme(req, res, next);
   });
 });
 

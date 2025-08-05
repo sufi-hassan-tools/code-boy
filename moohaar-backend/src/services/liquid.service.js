@@ -1,4 +1,6 @@
 import { Liquid } from 'liquidjs';
+import { JSDOM } from 'jsdom';
+import createDOMPurify from 'dompurify';
 import config from '../config/index.js';
 
 // Configure LiquidJS with template caching for performance
@@ -8,5 +10,10 @@ const engine = new Liquid({
   cache: true, // cache compiled templates
   dynamicPartials: false, // disable dynamic partials for speed
 });
+
+// Register HTML sanitization filter using DOMPurify
+const window = new JSDOM('').window;
+const DOMPurify = createDOMPurify(window);
+engine.registerFilter('sanitize', (html) => DOMPurify.sanitize(html));
 
 export default engine;

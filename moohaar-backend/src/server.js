@@ -11,6 +11,7 @@ import Theme from './models/theme.model.js';
 import themeRoutes from './routes/theme.routes.js';
 import storeRoutes from './routes/store.routes.js';
 import healthRoutes from './routes/health.routes.js';
+import errorHandler from './middleware/errorHandler.js';
 
 const app = express();
 
@@ -61,10 +62,11 @@ app.use(async (req, res, next) => {
         req.store = store;
       }
     }
+    return next();
   } catch (err) {
     console.error('Domain mapping failed', err);
+    return next(err);
   }
-  next();
 });
 
 // API routes
@@ -74,7 +76,7 @@ app.use('/health', healthRoutes);
 app.use('/themes', express.static(config.THEMES_PATH));
 
 // Public storefront - no auth required
-app.get('/*', async (req, res) => {
+app.get('/*', async (req, res, next) => {
   try {
     const store = req.store;
     if (!store || !store.activeTheme) {
@@ -116,9 +118,12 @@ app.get('/*', async (req, res) => {
     });
     return res.send(html);
   } catch (err) {
-    return res.status(500).send('Server error');
+    return next(err);
   }
 });
+
+// Centralized error handler
+app.use(errorHandler);
 
 const start = async () => {
   try {
