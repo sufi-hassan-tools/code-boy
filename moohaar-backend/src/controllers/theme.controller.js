@@ -35,7 +35,7 @@ router.post(
       const themeId = new Theme().id;
       const destPath = path.join(process.env.THEMES_PATH, themeId);
 
-      // Extract uploaded zip safely then remove the temporary archive
+      // Extract uploaded ZIP safely then remove the temporary archive
       await sanitizeAndUnzip(req.file.path, destPath);
       await fs.unlink(req.file.path);
 
@@ -49,48 +49,41 @@ router.post(
         return res.status(400).json({ message: `${err.message}` });
       }
 
-      // Validate presence of config.json and its required fields
-      const configPath = path.join(destPath, 'config.json');
+      // Read and parse theme configuration
+      let config;
       try {
-        await fs.access(configPath);
-      } catch {
-        return res
-          .status(400)
-          .json({ message: 'config.json missing in theme' });
+        const fileContents = await fs.readFile(
+          path.join(destPath, 'config.json'),
+          'utf-8'
+        );
+        config = JSON.parse(fileContents);
+
+        // Validate required fields
+        if (!config.name || typeof config.name !== 'string')
+          throw new Error('Missing name');
+        if (!config.handle || typeof config.handle !== 'string')
+          throw new Error('Missing handle');
+        if (!config.version || typeof config.version !== 'string')
+          throw new Error('Missing version');
+        if (!config.description || typeof config.description !== 'string')
+          throw new Error('Missing description');
+        if (!config.previewImage || typeof config.previewImage !== 'string')
+          throw new Error('Missing previewImage');
+      } catch (err) {
+        return res.status(400).json({ message: err.message });
       }
 
-      const meta = JSON.parse(await fs.readFile(configPath, 'utf-8'));
-      try {
-        const requiredFields = [
-          'name',
-          'handle',
-          'version',
-          'description',
-          'previewImage',
-        ];
-        for (const field of requiredFields) {
-          if (typeof meta[field] !== 'string' || !meta[field]) {
-            throw new Error(`Invalid config.json: missing ${field}`);
-          }
-        }
-      } catch (validationErr) {
-        return res.status(400).json({ message: validationErr.message });
-      }
+      // Build theme paths for templates and assets
+      const paths = {
+        root: destPath,
+        templates: path.join(destPath, 'templates'),
+        assets: path.join(destPath, 'assets'),
+      };
 
-      // Persist theme metadata
-      const theme = new Theme({
-        _id: themeId,
-        name: meta.name,
-        version: meta.version,
-        description: meta.description,
-        previewImage: meta.previewImage,
-        paths: { root: destPath },
-        metadata: meta,
-      });
+      // Persist theme metadata using Mongoose
+      const newTheme = await Theme.create({ ...config, paths });
 
-      await theme.save();
-
-      return res.status(201).json(theme);
+      return res.status(201).json(newTheme);
     } catch (err) {
       return next(err);
     }
@@ -195,43 +188,45 @@ router.put(
         return res.status(400).json({ message: validationErr.message });
       }
 
-      // Validate config.json
-      const configPath = path.join(themeDir, 'config.json');
+      // Read and parse theme configuration
+      let config;
       try {
-        await fs.access(configPath);
-      } catch {
-        return res
-          .status(400)
-          .json({ message: 'config.json missing in theme' });
+        const fileContents = await fs.readFile(
+          path.join(themeDir, 'config.json'),
+          'utf-8'
+        );
+        config = JSON.parse(fileContents);
+
+        // Validate required fields
+        if (!config.name || typeof config.name !== 'string')
+          throw new Error('Missing name');
+        if (!config.handle || typeof config.handle !== 'string')
+          throw new Error('Missing handle');
+        if (!config.version || typeof config.version !== 'string')
+          throw new Error('Missing version');
+        if (!config.description || typeof config.description !== 'string')
+          throw new Error('Missing description');
+        if (!config.previewImage || typeof config.previewImage !== 'string')
+          throw new Error('Missing previewImage');
+      } catch (err) {
+        return res.status(400).json({ message: err.message });
       }
 
-      const meta = JSON.parse(await fs.readFile(configPath, 'utf-8'));
-      try {
-        const requiredFields = [
-          'name',
-          'handle',
-          'version',
-          'description',
-          'previewImage',
-        ];
-        for (const field of requiredFields) {
-          if (typeof meta[field] !== 'string' || !meta[field]) {
-            throw new Error(`Invalid config.json: missing ${field}`);
-          }
-        }
-      } catch (validationErr) {
-        return res.status(400).json({ message: validationErr.message });
-      }
+      // Build theme paths for templates and assets
+      const paths = {
+        root: themeDir,
+        templates: path.join(themeDir, 'templates'),
+        assets: path.join(themeDir, 'assets'),
+      };
 
-      // Update theme metadata
-      theme.version = meta.version;
-      theme.description = meta.description;
-      theme.previewImage = meta.previewImage;
-      theme.paths = { root: themeDir };
-      theme.metadata = meta;
-      await theme.save();
+      // Update theme in database
+      const updatedTheme = await Theme.findByIdAndUpdate(
+        id,
+        { ...config, paths },
+        { new: true }
+      );
 
-      return res.status(200).json(theme);
+      return res.status(200).json(updatedTheme);
     } catch (err) {
       return next(err);
     }
