@@ -112,6 +112,7 @@ export default function Dashboard() {
   const menuItems = [
     { name: 'Dashboard', path: '/dashboard', icon: '🏠' },
     { name: 'Profile', path: '/profile', icon: '👤' },
+    { name: 'Upload Theme', path: '/upload-theme', icon: '⬆️' },
   ];
 
   return (
