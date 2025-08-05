@@ -1,57 +1,40 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import ThemeCard from '../components/ThemeCard';
 import PreviewModal from '../components/PreviewModal';
+import Loading from '../components/Loading';
 import { getThemes, previewTheme, selectTheme } from '../services/api';
+import useApi from '../hooks/useApi';
 
 export default function ThemeStore() {
   const [offset, setOffset] = useState(0);
-  const [themes, setThemes] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
   const [previewHtml, setPreviewHtml] = useState('');
   const limit = 2;
 
-  useEffect(() => {
-    const load = async () => {
-      setLoading(true);
-      setError('');
-      try {
-        const data = await getThemes(offset, limit);
-        setThemes(data.themes || []);
-      } catch (e) {
-        setError('Failed to load themes');
-      } finally {
-        setLoading(false);
-      }
-    };
-    load();
-  }, [offset]);
+  const { data, loading, error } = useApi(getThemes, offset, limit);
+  const themes = data?.themes || [];
 
   const handlePreview = async (id) => {
     try {
-      const html = await previewTheme(id);
-      setPreviewHtml(html);
-    } catch (e) {
-      setError('Failed to load preview');
+      const htmlRes = await previewTheme(id);
+      setPreviewHtml(htmlRes.data || htmlRes);
+    } catch {
+      // ignore preview errors handled below
     }
   };
 
   const handleSelect = async (id) => {
     try {
-      const storeId = localStorage.getItem('storeId');
-      await selectTheme(id, storeId);
-    } catch (e) {
-      setError('Failed to select theme');
+      await selectTheme(id);
+    } catch {
+      // ignore selection errors handled below
     }
   };
 
   return (
     <div className="p-4 space-y-4">
-      {error && <p className="text-red-500 text-center">{error}</p>}
+      {error && <p className="text-red-500 text-center">{error.message || 'Failed to load themes'}</p>}
       {loading ? (
-        <div className="flex justify-center">
-          <div className="h-8 w-8 border-2 border-t-transparent border-indigo-600 rounded-full animate-spin" />
-        </div>
+        <Loading />
       ) : (
         <div className="space-y-4">
           {themes.map((theme) => (

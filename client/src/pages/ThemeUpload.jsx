@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 // Resolve API base URL automatically, similar to other pages
 const BASE_URL =
@@ -77,13 +78,11 @@ export default function ThemeUpload() {
       const fd = new FormData();
       fd.append('file', file);
       Object.entries(form).forEach(([k, v]) => fd.append(k, v));
-      const token = localStorage.getItem('token');
-      const res = await fetch(`${BASE_URL}/api/themes`, {
-        method: 'POST',
-        headers: { Authorization: `Bearer ${token}` },
-        body: fd,
+      const res = await axios.post(`${BASE_URL}/api/themes`, fd, {
+        withCredentials: true,
+        headers: { 'Content-Type': 'multipart/form-data' },
       });
-      if (!res.ok) throw new Error('Upload failed');
+      if (res.status !== 200) throw new Error('Upload failed');
       showToast('Theme uploaded!');
       // Redirect after brief delay so toast is visible
       setTimeout(() => navigate('/themes'), 1500);

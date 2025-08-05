@@ -1,3 +1,5 @@
+/* eslint-env node */
+/* eslint import/no-extraneous-dependencies: ["error", {"devDependencies": true}] */
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';

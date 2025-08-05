@@ -1,15 +1,13 @@
-export async function getThemes(offset, limit) {
-  return fetch(`/api/themes?offset=${offset}&limit=${limit}`).then((r) => r.json());
+import axios from 'axios';
+
+export function getThemes(offset, limit, config = {}) {
+  return axios.get(`/api/themes?offset=${offset}&limit=${limit}`, { withCredentials: true, ...config });
 }
 
-export async function previewTheme(id) {
-  return fetch(`/api/themes/${id}/preview`).then((r) => r.text());
+export function previewTheme(id, config = {}) {
+  return axios.get(`/api/themes/${id}/preview`, { withCredentials: true, responseType: 'text', ...config });
 }
 
-export async function selectTheme(id, storeId) {
-  return fetch(`/api/store/${storeId}/theme`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ themeId: id }),
-  });
+export function selectTheme(id, config = {}) {
+  return axios.post('/api/store/theme', { themeId: id }, { withCredentials: true, ...config });
 }

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { apiCall } from '../utils/api';
+import axios from 'axios';
 
 export default function Signup() {
   const [formData, setFormData] = useState({
@@ -33,24 +33,14 @@ export default function Signup() {
     }
 
     try {
-      const result = await apiCall('/api/auth/signup', {
-        method: 'POST',
-        body: JSON.stringify({
-          name: formData.name,
-          email: formData.email,
-          password: formData.password
-        })
-      });
-
-      if (result.ok) {
-        localStorage.setItem('token', result.data.token);
-        localStorage.setItem('user', JSON.stringify(result.data.user));
-        window.location.href = '/dashboard';
-      } else {
-        setError(result.data.msg || 'Signup failed. Please try again.');
-      }
+      await axios.post('/api/auth/signup', {
+        name: formData.name,
+        email: formData.email,
+        password: formData.password,
+      }, { withCredentials: true });
+      window.location.href = '/dashboard';
     } catch (err) {
-      setError(err.message);
+      setError(err.response?.data?.msg || err.message);
     } finally {
       setLoading(false);
     }

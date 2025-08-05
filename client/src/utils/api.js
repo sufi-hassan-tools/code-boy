@@ -3,8 +3,7 @@
 // development the Vite dev server runs on a different port, so default to the
 // Express server running on localhost unless a custom `VITE_API_BASE_URL` is
 // provided.
-const BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || (import.meta.env.DEV ? 'http://localhost:5000' : '');
+const BASE_URL = '';
 
 export const apiCall = async (endpoint, options = {}) => {
   const url = `${BASE_URL}${endpoint}`;
@@ -33,9 +32,10 @@ export const apiCall = async (endpoint, options = {}) => {
       status: response.status,
       data,
     };
-  } catch (error) {
-    console.error("API call failed:", error);
-    return {
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error('API call failed:', error);
+      return {
       ok: false,
       status: 0,
       data: { msg: error.message },

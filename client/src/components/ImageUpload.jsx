@@ -32,9 +32,9 @@ export default function ImageUpload({ label, value, onChange }) {
       }
       const formData = new FormData();
       formData.append('image', compressed, 'image.webp');
-      const token = localStorage.getItem('token');
       const res = await axios.post(`${BASE_URL}/api/upload/store-image`, formData, {
-        headers: { 'Content-Type': 'multipart/form-data', Authorization: `Bearer ${token}` },
+        headers: { 'Content-Type': 'multipart/form-data' },
+        withCredentials: true,
       });
       setPreview(res.data.url);
       onChange(res.data.url);

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { apiCall } from '../utils/api';
+import axios from 'axios';
 
 export default function Profile() {
   const [store, setStore] = useState(null);
@@ -14,20 +14,19 @@ export default function Profile() {
   const [saving, setSaving] = useState(false);
   const navigate = useNavigate();
 
-  const token = localStorage.getItem('token');
-  const userData = localStorage.getItem('user');
-  const user = userData ? JSON.parse(userData) : null;
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
-    if (!token || !user) {
-      navigate('/login');
-      return;
-    }
     const fetchStore = async () => {
-      const result = await apiCall('/api/store/me', {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (result.ok) {
+      try {
+        const userRes = await axios.get('/api/users/me', { withCredentials: true });
+        setUser(userRes.data);
+      } catch {
+        navigate('/login');
+        return;
+      }
+      const result = await axios.get('/api/store/me', { withCredentials: true }).catch(() => null);
+      if (result) {
         setStore(result.data);
         setFormData({
           storeName: result.data.storeName || '',
@@ -39,7 +38,7 @@ export default function Profile() {
       setLoading(false);
     };
     fetchStore();
-  }, [navigate, token, user]);
+  }, [navigate]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -48,16 +47,12 @@ export default function Profile() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSaving(true);
-    const result = await apiCall('/api/store/update', {
-      method: 'PUT',
-      headers: { Authorization: `Bearer ${token}` },
-      body: JSON.stringify(formData),
-    });
-    if (result.ok) {
-      setStore(result.data);
+    try {
+      const res = await axios.put('/api/store/update', formData, { withCredentials: true });
+      setStore(res.data);
       alert('Profile updated');
-    } else {
-      alert(result.data.msg || 'Update failed');
+    } catch (err) {
+      alert(err.response?.data?.msg || 'Update failed');
     }
     setSaving(false);
   };

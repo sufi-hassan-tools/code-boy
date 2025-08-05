@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -7,8 +8,9 @@ export default function Header() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    setIsLoggedIn(!!token);
+    axios.get('/api/auth/me', { withCredentials: true })
+      .then(() => setIsLoggedIn(true))
+      .catch(() => setIsLoggedIn(false));
   }, []);
 
   const handleCreateStoreClick = (e) => {
