@@ -2,7 +2,13 @@ import { Router } from 'express';
 import multer from 'multer';
 import path from 'path';
 import config from '../config/index.js';
-import { createTheme, listThemes, previewTheme } from '../controllers/theme.controller.js';
+import {
+  createTheme,
+  listThemes,
+  previewTheme,
+  updateTheme,
+  deleteTheme,
+} from '../controllers/theme.controller.js';
 import { auth, authorizeAdmin } from '../middleware/auth.middleware.js';
 
 const router = Router();
@@ -30,6 +36,19 @@ router.post('/', auth, authorizeAdmin, (req, res) => {
     return createTheme(req, res);
   });
 });
+
+// Admin update theme
+router.put('/:id', auth, authorizeAdmin, (req, res) => {
+  upload.single('file')(req, res, (err) => {
+    if (err) {
+      return res.status(400).json({ message: err.message });
+    }
+    return updateTheme(req, res);
+  });
+});
+
+// Admin delete theme
+router.delete('/:id', auth, authorizeAdmin, deleteTheme);
 
 // Protected routes require valid JWT
 router.get('/', auth, listThemes);
