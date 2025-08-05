@@ -2,11 +2,18 @@
   "name": "client",
   "version": "1.0.0",
   "private": true,
+  "engines": {
+    "node": ">=20.0.0"
+  },
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "npm run lint && npm run build:prod",
+    "build:prod": "vite build",
     "start": "vite preview",
-    "test": "echo \"No tests yet\" && exit 0"
+    "test": "echo \"No tests yet\" && exit 0",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write ."
   },
   "dependencies": {
     "axios": "^1.6.0",
@@ -21,6 +28,11 @@
     "postcss": "^8.4.31",
     "tailwindcss": "^3.3.5",
     "vite": "^4.5.0",
-    "vite-plugin-pwa": "^0.16.0"
+    "vite-plugin-pwa": "^0.16.0",
+    "eslint": "^8.57.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "^2.29.1",
+    "prettier": "^3.2.5",
+    "eslint-config-prettier": "^9.1.0"
   }
 }
