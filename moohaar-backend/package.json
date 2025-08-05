@@ -2,9 +2,14 @@
   "name": "moohaar-backend",
   "version": "1.0.0",
   "type": "module",
+  "engines": {
+    "node": ">=20.0.0"
+  },
   "scripts": {
     "start": "node src/server.js",
     "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write .",
     "test": "echo \"No tests specified\" && exit 0"
   },
   "dependencies": {
