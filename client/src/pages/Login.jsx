@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { apiCall } from '../utils/api';
+import { login } from '../services/auth.service';
 
 export default function Login() {
   const [formData, setFormData] = useState({
@@ -24,20 +24,10 @@ export default function Login() {
     setError('');
 
     try {
-      const result = await apiCall('/api/auth/login', {
-        method: 'POST',
-        body: JSON.stringify(formData)
-      });
-
-      if (result.ok) {
-        localStorage.setItem('token', result.data.token);
-        localStorage.setItem('user', JSON.stringify(result.data.user));
-        window.location.href = '/dashboard';
-      } else {
-        setError(result.data.msg || 'Login failed. Please check your credentials.');
-      }
+      await login(formData);
+      window.location.href = '/dashboard';
     } catch (err) {
-      setError(err.message);
+      setError(err.response?.data?.msg || err.message);
     } finally {
       setLoading(false);
     }

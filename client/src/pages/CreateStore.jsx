@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { apiCall } from '../utils/api';
+import axios from 'axios';
 import ImageUpload from '../components/ImageUpload';
 
 export default function CreateStore() {
@@ -20,17 +20,18 @@ export default function CreateStore() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      navigate('/login');
-      return;
-    }
     const checkStore = async () => {
-      const result = await apiCall('/api/store/me', {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (result.ok) {
-        navigate('/dashboard');
+      try {
+        await axios.get('/api/users/me', { withCredentials: true });
+      } catch {
+        navigate('/login');
+        return;
+      }
+      try {
+        const res = await axios.get('/api/store/me', { withCredentials: true });
+        if (res.status === 200) navigate('/dashboard');
+      } catch {
+        // ignore, no store yet
       }
     };
     checkStore();
@@ -49,23 +50,13 @@ export default function CreateStore() {
     setError('');
 
     try {
-      const token = localStorage.getItem('token');
-      const result = await apiCall('/api/store/create', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify(formData)
-      });
-
-      if (result.ok) {
+      const res = await axios.post('/api/store/create', formData, { withCredentials: true });
+      if (res.status === 200) {
         alert('Store created successfully!');
         navigate('/themes');
-      } else {
-        setError(result.data.msg || 'Store creation failed. Please try again.');
       }
     } catch (err) {
-      setError(err.message);
+      setError(err.response?.data?.msg || err.message);
     } finally {
       setLoading(false);
     }

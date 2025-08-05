@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import ImageUpload from '../components/ImageUpload';
+import { logout } from '../services/auth.service';
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -22,18 +23,10 @@ export default function Dashboard() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      navigate('/login');
-      return;
-    }
-
     axios.defaults.baseURL = import.meta.env.VITE_API_BASE_URL || (import.meta.env.DEV ? 'http://localhost:5000' : '');
-    axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-
     const fetchData = async () => {
       try {
-        const userRes = await axios.get('/api/users/me');
+        const userRes = await axios.get('/api/users/me', { withCredentials: true });
         setUser(userRes.data);
         setProfileForm(userRes.data);
       } catch {
@@ -41,7 +34,7 @@ export default function Dashboard() {
         return;
       }
       try {
-        const storeRes = await axios.get('/api/store/my-store');
+        const storeRes = await axios.get('/api/store/my-store', { withCredentials: true });
         setStore(storeRes.data);
         setStoreForm({
           storeName: storeRes.data.storeName || '',
@@ -67,7 +60,7 @@ export default function Dashboard() {
   const handleProfileSave = async () => {
     setSaving(true);
     try {
-      const res = await axios.put('/api/users/me', profileForm);
+      const res = await axios.put('/api/users/me', profileForm, { withCredentials: true });
       setUser(res.data);
       setProfileModal(false);
     } catch (err) {
@@ -81,10 +74,10 @@ export default function Dashboard() {
     setSaving(true);
     try {
       if (store) {
-        const res = await axios.put('/api/store/update', storeForm);
+        const res = await axios.put('/api/store/update', storeForm, { withCredentials: true });
         setStore(res.data);
       } else {
-        const res = await axios.post('/api/store/create', storeForm);
+        const res = await axios.post('/api/store/create', storeForm, { withCredentials: true });
         setStore(res.data.store);
       }
       setStoreModal(false);
@@ -95,9 +88,8 @@ export default function Dashboard() {
     }
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+  const handleLogout = async () => {
+    await logout();
     navigate('/login');
   };
 

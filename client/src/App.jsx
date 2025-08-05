@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Home from './pages/Home';
 import Login from './pages/Login';
@@ -13,10 +13,21 @@ import ResetPassword from './pages/ResetPassword';
 const ThemeStore = React.lazy(() => import('./pages/ThemeStore'));
 const ThemeUpload = React.lazy(() => import('./pages/ThemeUpload'));
 import Loading from './components/Loading';
+import axios from 'axios';
 
 const PrivateRoute = ({ children }) => {
-  const isAuthenticated = localStorage.getItem('token');
-  return isAuthenticated ? children : <Navigate to="/login" />;
+  const [allowed, setAllowed] = useState(false);
+  const [checking, setChecking] = useState(true);
+
+  useEffect(() => {
+    axios.get('/api/auth/me', { withCredentials: true })
+      .then(() => setAllowed(true))
+      .catch(() => setAllowed(false))
+      .finally(() => setChecking(false));
+  }, []);
+
+  if (checking) return <Loading />;
+  return allowed ? children : <Navigate to="/login" />;
 };
 
 export default function App() {
