@@ -26,7 +26,7 @@ export default function App() {
         <Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
         <Route path="/analytics" element={<PrivateRoute><Analytics /></PrivateRoute>} />
         <Route path="/create-store" element={<PrivateRoute><CreateStore /></PrivateRoute>} />
-        <Route path="/themes" element={<PrivateRoute><ThemeStore /></PrivateRoute>} />
+        <Route path="/themes" element={<ThemeStore />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password/:token" element={<ResetPassword />} />
       </Routes>
