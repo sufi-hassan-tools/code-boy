@@ -1,90 +1,114 @@
-import fs from 'fs';
-import fsp from 'fs/promises';
+import { Router } from 'express';
+import multer from 'multer';
 import path from 'path';
-import unzipper from 'unzipper';
+import fs from 'fs/promises';
+
 import Theme from '../models/theme.model.js';
-import config from '../config/index.js';
 import engine from '../services/liquid.service.js';
+import { auth, authorizeAdmin } from '../middleware/auth.middleware.js';
+
+// sanitizeAndUnzip utility lives outside this package in the root src directory
+import sanitizeAndUnzip from '../../src/utils/unzip.util.js';
+
+// Multer configuration: store uploads in configured path with size and type checks
+const upload = multer({
+  dest: process.env.UPLOADS_PATH,
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5 MB
+  fileFilter: (req, file, cb) => {
+    if (path.extname(file.originalname).toLowerCase() === '.zip') cb(null, true);
+    else cb(new Error('Only ZIP files allowed'));
+  },
+});
+
+const router = Router();
 
 // POST /api/themes
-// Handles theme ZIP upload and persists metadata
-export const createTheme = async (req, res, next) => {
-  try {
-    if (!req.file) {
-      return res.status(400).json({ message: 'No file uploaded' });
-    }
-
-    // Prepare paths using a generated theme ID
-    const theme = new Theme();
-    const themeDir = path.join(config.THEMES_PATH, theme.id);
-    await fsp.mkdir(themeDir, { recursive: true });
-
-    // Unzip uploaded file into the theme directory
-    await fs
-      .createReadStream(req.file.path)
-      .pipe(unzipper.Extract({ path: themeDir }))
-      .promise();
-
-    // Validate required directories
-    const requiredDirs = ['layout', 'templates', 'assets'];
+// Handles theme ZIP upload, sanitizes contents, and persists metadata
+router.post(
+  '/',
+  auth,
+  authorizeAdmin,
+  upload.single('themeFile'),
+  async (req, res, next) => {
     try {
-      requiredDirs.forEach((dir) => {
-        const dirPath = path.join(themeDir, dir);
-        if (!fs.existsSync(dirPath)) {
-          throw new Error(`${dir} folder missing in theme`);
+      // Generate a theme ID and prepare destination path
+      const themeId = new Theme().id;
+      const destPath = path.join(process.env.THEMES_PATH, themeId);
+
+      // Extract uploaded zip safely then remove the temporary archive
+      await sanitizeAndUnzip(req.file.path, destPath);
+      await fs.unlink(req.file.path);
+
+      // Validate required theme sub-directories
+      const requiredDirs = ['layout', 'templates', 'assets'];
+      try {
+        await Promise.all(
+          requiredDirs.map((dir) => fs.access(path.join(destPath, dir)))
+        );
+      } catch (err) {
+        return res.status(400).json({ message: `${err.message}` });
+      }
+
+      // Validate presence of config.json and its required fields
+      const configPath = path.join(destPath, 'config.json');
+      try {
+        await fs.access(configPath);
+      } catch {
+        return res
+          .status(400)
+          .json({ message: 'config.json missing in theme' });
+      }
+
+      const meta = JSON.parse(await fs.readFile(configPath, 'utf-8'));
+      try {
+        const requiredFields = [
+          'name',
+          'handle',
+          'version',
+          'description',
+          'previewImage',
+        ];
+        for (const field of requiredFields) {
+          if (typeof meta[field] !== 'string' || !meta[field]) {
+            throw new Error(`Invalid config.json: missing ${field}`);
+          }
         }
+      } catch (validationErr) {
+        return res.status(400).json({ message: validationErr.message });
+      }
+
+      // Persist theme metadata
+      const theme = new Theme({
+        _id: themeId,
+        name: meta.name,
+        version: meta.version,
+        description: meta.description,
+        previewImage: meta.previewImage,
+        paths: { root: destPath },
+        metadata: meta,
       });
-    } catch (validationErr) {
-      return res.status(400).json({ message: validationErr.message });
+
+      await theme.save();
+
+      return res.status(201).json(theme);
+    } catch (err) {
+      return next(err);
     }
-
-    // Validate config.json
-    const configPath = path.join(themeDir, 'config.json');
-    if (!fs.existsSync(configPath)) {
-      return res.status(400).json({ message: 'config.json missing in theme' });
-    }
-
-    const meta = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
-    try {
-      const requiredFields = ['name', 'handle', 'version', 'description', 'previewImage'];
-      requiredFields.forEach((field) => {
-        if (typeof meta[field] !== 'string' || !meta[field]) {
-          throw new Error(`Invalid config.json: missing ${field}`);
-        }
-      });
-    } catch (validationErr) {
-      return res.status(400).json({ message: validationErr.message });
-    }
-
-    // Persist theme metadata
-    theme.name = meta.name;
-    theme.version = meta.version;
-    theme.description = meta.description;
-    theme.previewImage = meta.previewImage;
-    theme.paths = { root: themeDir };
-    theme.metadata = meta;
-    await theme.save();
-
-    // Clean up uploaded zip
-    await fsp.unlink(req.file.path);
-
-    return res.status(201).json(theme);
-  } catch (err) {
-    return next(err);
   }
-};
+);
 
 // GET /api/themes
 // Returns paginated list of themes
-export const listThemes = async (req, res, next) => {
+router.get('/', auth, async (req, res, next) => {
   try {
-    // Pagination: offset and limit with defaults 0 and 2
     let { offset = 0, limit = 2 } = req.query;
     offset = parseInt(offset, 10);
     limit = parseInt(limit, 10);
 
     if (Number.isNaN(offset) || Number.isNaN(limit)) {
-      return res.status(400).json({ message: 'offset and limit must be integers' });
+      return res
+        .status(400)
+        .json({ message: 'offset and limit must be integers' });
     }
 
     const [themes, total] = await Promise.all([
@@ -96,11 +120,11 @@ export const listThemes = async (req, res, next) => {
   } catch (err) {
     return next(err);
   }
-};
+});
 
 // GET /api/themes/:id/preview
 // Renders a preview of the theme's index template
-export const previewTheme = async (req, res, next) => {
+router.get('/:id/preview', auth, async (req, res, next) => {
   try {
     const { id } = req.params;
     const theme = await Theme.findById(id);
@@ -108,12 +132,18 @@ export const previewTheme = async (req, res, next) => {
       return res.status(404).json({ message: 'Theme not found' });
     }
 
-    const templatePath = path.join(theme.paths.root, 'templates', 'index.liquid');
-    if (!fs.existsSync(templatePath)) {
+    const templatePath = path.join(
+      theme.paths.root,
+      'templates',
+      'index.liquid'
+    );
+    try {
+      await fs.access(templatePath);
+    } catch {
       return res.status(404).json({ message: 'Template not found' });
     }
 
-    const template = fs.readFileSync(templatePath, 'utf-8');
+    const template = await fs.readFile(templatePath, 'utf-8');
     const context = {
       store: { name: 'Preview Store', logo: '/logo.png' },
       products: [{ name: 'Demo', price: 0, image: '/demo.jpg' }],
@@ -123,88 +153,93 @@ export const previewTheme = async (req, res, next) => {
   } catch (err) {
     return next(err);
   }
-};
+});
 
 // PUT /api/themes/:id
 // Replaces theme files and updates metadata
-export const updateTheme = async (req, res, next) => {
-  try {
-    const { id } = req.params;
+router.put(
+  '/:id',
+  auth,
+  authorizeAdmin,
+  upload.single('themeFile'),
+  async (req, res, next) => {
+    try {
+      const { id } = req.params;
 
-    const theme = await Theme.findById(id);
-    if (!theme) {
-      if (req.file) {
-        await fsp.unlink(req.file.path);
+      const theme = await Theme.findById(id);
+      if (!theme) {
+        if (req.file) {
+          await fs.unlink(req.file.path);
+        }
+        return res.status(404).json({ message: 'Theme not found' });
       }
-      return res.status(404).json({ message: 'Theme not found' });
-    }
 
-    if (!req.file) {
-      return res.status(400).json({ message: 'No file uploaded' });
-    }
+      if (!req.file) {
+        return res.status(400).json({ message: 'No file uploaded' });
+      }
 
-    const themeDir = path.join(config.THEMES_PATH, id);
+      const themeDir = path.join(process.env.THEMES_PATH, id);
 
-    // Remove existing directory and recreate
-    await fsp.rm(themeDir, { recursive: true, force: true });
-    await fsp.mkdir(themeDir, { recursive: true });
+      // Remove existing directory and extract new one
+      await fs.rm(themeDir, { recursive: true, force: true });
+      await sanitizeAndUnzip(req.file.path, themeDir);
+      await fs.unlink(req.file.path);
 
-    // Unzip uploaded file into the theme directory
-    await fs
-      .createReadStream(req.file.path)
-      .pipe(unzipper.Extract({ path: themeDir }))
-      .promise();
+      // Validate required directories
+      const requiredDirs = ['layout', 'templates', 'assets'];
+      try {
+        await Promise.all(
+          requiredDirs.map((dir) => fs.access(path.join(themeDir, dir)))
+        );
+      } catch (validationErr) {
+        return res.status(400).json({ message: validationErr.message });
+      }
 
-    // Validate required directories
-    const requiredDirs = ['layout', 'templates', 'assets'];
-    try {
-      requiredDirs.forEach((dir) => {
-        const dirPath = path.join(themeDir, dir);
-        if (!fs.existsSync(dirPath)) {
-          throw new Error(`${dir} folder missing in theme`);
+      // Validate config.json
+      const configPath = path.join(themeDir, 'config.json');
+      try {
+        await fs.access(configPath);
+      } catch {
+        return res
+          .status(400)
+          .json({ message: 'config.json missing in theme' });
+      }
+
+      const meta = JSON.parse(await fs.readFile(configPath, 'utf-8'));
+      try {
+        const requiredFields = [
+          'name',
+          'handle',
+          'version',
+          'description',
+          'previewImage',
+        ];
+        for (const field of requiredFields) {
+          if (typeof meta[field] !== 'string' || !meta[field]) {
+            throw new Error(`Invalid config.json: missing ${field}`);
+          }
         }
-      });
-    } catch (validationErr) {
-      return res.status(400).json({ message: validationErr.message });
+      } catch (validationErr) {
+        return res.status(400).json({ message: validationErr.message });
+      }
+
+      // Update theme metadata
+      theme.version = meta.version;
+      theme.description = meta.description;
+      theme.previewImage = meta.previewImage;
+      theme.paths = { root: themeDir };
+      theme.metadata = meta;
+      await theme.save();
+
+      return res.status(200).json(theme);
+    } catch (err) {
+      return next(err);
     }
-
-    // Validate config.json
-    const configPath = path.join(themeDir, 'config.json');
-    if (!fs.existsSync(configPath)) {
-      return res.status(400).json({ message: 'config.json missing in theme' });
-    }
-
-    const meta = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
-    try {
-      const requiredFields = ['name', 'handle', 'version', 'description', 'previewImage'];
-      requiredFields.forEach((field) => {
-        if (typeof meta[field] !== 'string' || !meta[field]) {
-          throw new Error(`Invalid config.json: missing ${field}`);
-        }
-      });
-    } catch (validationErr) {
-      return res.status(400).json({ message: validationErr.message });
-    }
-
-    // Update theme metadata
-    theme.version = meta.version;
-    theme.description = meta.description;
-    theme.previewImage = meta.previewImage;
-    theme.paths = { root: themeDir };
-    theme.metadata = meta;
-    await theme.save();
-
-    // Clean up uploaded zip
-    await fsp.unlink(req.file.path);
-
-    return res.status(200).json(theme);
-  } catch (err) {
-    return next(err);
   }
-};
+);
 
 // DELETE /api/themes/:id
-export const deleteTheme = async (req, res, next) => {
+router.delete('/:id', auth, authorizeAdmin, async (req, res, next) => {
   try {
     const { id } = req.params;
     const theme = await Theme.findById(id);
@@ -212,12 +247,15 @@ export const deleteTheme = async (req, res, next) => {
       return res.status(404).json({ message: 'Theme not found' });
     }
 
-    const themeDir = path.join(config.THEMES_PATH, id);
-    await fsp.rm(themeDir, { recursive: true, force: true });
+    const themeDir = path.join(process.env.THEMES_PATH, id);
+    await fs.rm(themeDir, { recursive: true, force: true });
     await theme.deleteOne();
 
     return res.status(204).send();
   } catch (err) {
     return next(err);
   }
-};
+});
+
+export default router;
+
