@@ -9,6 +9,7 @@ import CreateStore from './pages/CreateStore';
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
 import ThemeStore from './pages/ThemeStore';
+import ThemeUpload from './pages/ThemeUpload';
 
 const PrivateRoute = ({ children }) => {
   const isAuthenticated = localStorage.getItem('token');
@@ -27,6 +28,7 @@ export default function App() {
         <Route path="/analytics" element={<PrivateRoute><Analytics /></PrivateRoute>} />
         <Route path="/create-store" element={<PrivateRoute><CreateStore /></PrivateRoute>} />
         <Route path="/themes" element={<ThemeStore />} />
+        <Route path="/upload-theme" element={<PrivateRoute><ThemeUpload /></PrivateRoute>} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password/:token" element={<ResetPassword />} />
       </Routes>
