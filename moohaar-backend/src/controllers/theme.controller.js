@@ -7,7 +7,8 @@ import config from '../config/index.js';
 import engine from '../services/liquid.service.js';
 
 // POST /api/themes
-export const createTheme = async (req, res) => {
+// Handles theme ZIP upload and persists metadata
+export const createTheme = async (req, res, next) => {
   try {
     if (!req.file) {
       return res.status(400).json({ message: 'No file uploaded' });
@@ -69,12 +70,13 @@ export const createTheme = async (req, res) => {
 
     return res.status(201).json(theme);
   } catch (err) {
-    return res.status(500).json({ message: err.message });
+    return next(err);
   }
 };
 
 // GET /api/themes
-export const listThemes = async (req, res) => {
+// Returns paginated list of themes
+export const listThemes = async (req, res, next) => {
   try {
     // Pagination: offset and limit with defaults 0 and 2
     let { offset = 0, limit = 2 } = req.query;
@@ -92,12 +94,13 @@ export const listThemes = async (req, res) => {
 
     return res.json({ themes, total, offset, limit });
   } catch (err) {
-    return res.status(500).json({ message: err.message });
+    return next(err);
   }
 };
 
 // GET /api/themes/:id/preview
-export const previewTheme = async (req, res) => {
+// Renders a preview of the theme's index template
+export const previewTheme = async (req, res, next) => {
   try {
     const { id } = req.params;
     const theme = await Theme.findById(id);
@@ -118,12 +121,13 @@ export const previewTheme = async (req, res) => {
     const html = await engine.parseAndRender(template, context);
     return res.send(html);
   } catch (err) {
-    return res.status(500).json({ message: err.message });
+    return next(err);
   }
 };
 
 // PUT /api/themes/:id
-export const updateTheme = async (req, res) => {
+// Replaces theme files and updates metadata
+export const updateTheme = async (req, res, next) => {
   try {
     const { id } = req.params;
 
@@ -195,12 +199,12 @@ export const updateTheme = async (req, res) => {
 
     return res.status(200).json(theme);
   } catch (err) {
-    return res.status(500).json({ message: err.message });
+    return next(err);
   }
 };
 
 // DELETE /api/themes/:id
-export const deleteTheme = async (req, res) => {
+export const deleteTheme = async (req, res, next) => {
   try {
     const { id } = req.params;
     const theme = await Theme.findById(id);
@@ -214,6 +218,6 @@ export const deleteTheme = async (req, res) => {
 
     return res.status(204).send();
   } catch (err) {
-    return res.status(500).json({ message: err.message });
+    return next(err);
   }
 };
