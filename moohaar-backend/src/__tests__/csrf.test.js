@@ -1,4 +1,5 @@
 /* eslint-env jest */
+/* eslint-disable import/no-extraneous-dependencies */
 import request from 'supertest';
 import fs from 'fs/promises';
 import path from 'path';
@@ -10,7 +11,7 @@ jest.unstable_mockModule('../models/store.model.js', () => ({
   default: { findOne: jest.fn().mockResolvedValue(null) },
 }));
 
-const { app } = await import('../server.js');
+const { app } = await import('../server.js'); // eslint-disable-line import/extensions
 
 let tmpRoot;
 
