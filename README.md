@@ -13,6 +13,18 @@ This repository contains a React frontend (Vite) and an Express backend with Mon
 - `npm run dev` – start server with nodemon
 - `npm run start` – start server
 
+## Testing
+
+Backend and frontend projects use Jest with an 80% global coverage threshold. Example tests exist in `moohaar-backend/src/controllers/__tests__` and `client/src/components/__tests__`.
+
+- Backend: `npm test` from `moohaar-backend`
+- Frontend unit tests: `npm test` from `client`
+- Frontend end-to-end tests: `npm run test:e2e` from `client`
+
+## Docker
+
+Dockerfiles are provided for the client and backend. To run both services together use `docker-compose up --build` which respects environment variables like `BACKEND_PORT` and `CLIENT_PORT`.
+
 See `client/package.json` and `server/package.json` for dependencies.
 
 ## Environment Variables
