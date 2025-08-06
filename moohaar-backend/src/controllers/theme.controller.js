@@ -6,9 +6,12 @@ import fs from 'fs/promises';
 import Theme from '../models/theme.model.js';
 import engine from '../services/liquid.service.js';
 import { auth, authorizeAdmin } from '../middleware/auth.middleware.js';
+import logger from '../utils/logger.js';
 
-// sanitizeAndUnzip utility lives outside this package in the root src directory
-import sanitizeAndUnzip from '../../src/utils/unzip.util.js';
+// Utility for safe extraction and scanning of theme archives
+import sanitizeAndUnzip, {
+  MaliciousContentError,
+} from '../utils/unzip.util.mjs';
 
 // Multer configuration: store uploads in configured path with size and type checks
 const upload = multer({
@@ -36,7 +39,16 @@ router.post(
       const destPath = path.join(process.env.THEMES_PATH, themeId);
 
       // Extract uploaded ZIP safely then remove the temporary archive
-      await sanitizeAndUnzip(req.file.path, destPath);
+      try {
+        await sanitizeAndUnzip(req.file.path, destPath);
+      } catch (err) {
+        await fs.unlink(req.file.path);
+        if (err instanceof MaliciousContentError) {
+          logger.warn(`Theme upload rejected: ${err.message}`);
+          return res.status(400).json({ message: err.message });
+        }
+        throw err;
+      }
       await fs.unlink(req.file.path);
 
       // Validate required theme sub-directories
@@ -175,7 +187,16 @@ router.put(
 
       // Remove existing directory and extract new one
       await fs.rm(themeDir, { recursive: true, force: true });
-      await sanitizeAndUnzip(req.file.path, themeDir);
+      try {
+        await sanitizeAndUnzip(req.file.path, themeDir);
+      } catch (err) {
+        await fs.unlink(req.file.path);
+        if (err instanceof MaliciousContentError) {
+          logger.warn(`Theme update rejected: ${err.message}`);
+          return res.status(400).json({ message: err.message });
+        }
+        throw err;
+      }
       await fs.unlink(req.file.path);
 
       // Validate required directories
