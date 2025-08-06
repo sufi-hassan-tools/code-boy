@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-syntax, no-continue, no-await-in-loop */
 import fs from 'fs';
 import path from 'path';
 import { Open } from 'unzipper';

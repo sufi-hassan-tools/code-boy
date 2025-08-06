@@ -40,3 +40,19 @@ RESET_PASS=your_email_password
 
 When deploying to [Render](https://render.com), add the same `MONGODB_URI`
 value in the **Environment** settings for your service.
+
+### moohaar-backend caching and APM
+
+The `moohaar-backend` service integrates Redis caching, Prometheus metrics and Elastic APM. Configure via environment variables:
+
+```
+REDIS_URL=redis://localhost:6379
+CACHE_TTL_THEME=60        # seconds for theme metadata cache
+CACHE_TTL_CONTEXT=30      # seconds for storefront rendering cache
+CACHE_TTL_HEALTH=5        # seconds for health check cache
+APM_ACTIVE=true           # disable by setting to 'false'
+APM_SERVICE_NAME=moohaar-backend
+APM_SERVER_URL=http://localhost:8200
+```
+
+The `/metrics` endpoint exposes Prometheus metrics like request rate, error rate and latency distributions.

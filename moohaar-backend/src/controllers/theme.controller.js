@@ -1,3 +1,4 @@
+/* eslint-disable import/named */
 import { Router } from 'express';
 import multer from 'multer';
 import path from 'path';
@@ -7,8 +8,11 @@ import Theme from '../models/theme.model';
 import engine from '../services/liquid.service';
 import { auth, authorizeAdmin } from '../middleware/auth.middleware';
 import logger from '../utils/logger';
+import config from '../config/index';
+import { getCache, setCache } from '../services/cache.service';
 
 // Utility for safe extraction and scanning of theme archives
+// eslint-disable-next-line import/named
 import {
   MaliciousContentError,
   unzipFile,
@@ -63,24 +67,24 @@ router.post(
       }
 
       // Read and parse theme configuration
-      let config;
+      let themeConfig;
       try {
         const fileContents = await fs.readFile(
           path.join(destPath, 'config.json'),
           'utf-8'
         );
-        config = JSON.parse(fileContents);
+        themeConfig = JSON.parse(fileContents);
 
         // Validate required fields
-        if (!config.name || typeof config.name !== 'string')
+        if (!themeConfig.name || typeof themeConfig.name !== 'string')
           throw new Error('Missing name');
-        if (!config.handle || typeof config.handle !== 'string')
+        if (!themeConfig.handle || typeof themeConfig.handle !== 'string')
           throw new Error('Missing handle');
-        if (!config.version || typeof config.version !== 'string')
+        if (!themeConfig.version || typeof themeConfig.version !== 'string')
           throw new Error('Missing version');
-        if (!config.description || typeof config.description !== 'string')
+        if (!themeConfig.description || typeof themeConfig.description !== 'string')
           throw new Error('Missing description');
-        if (!config.previewImage || typeof config.previewImage !== 'string')
+        if (!themeConfig.previewImage || typeof themeConfig.previewImage !== 'string')
           throw new Error('Missing previewImage');
       } catch (err) {
         return res.status(400).json({ message: err.message });
@@ -94,7 +98,7 @@ router.post(
       };
 
       // Persist theme metadata using Mongoose
-      const newTheme = await Theme.create({ ...config, paths });
+      const newTheme = await Theme.create({ ...themeConfig, paths });
 
       return res.status(201).json(newTheme);
     } catch (err) {
@@ -117,12 +121,20 @@ router.get('/', auth, async (req, res, next) => {
         .json({ message: 'offset and limit must be integers' });
     }
 
+    const cacheKey = `themes:${offset}:${limit}`;
+    const cached = await getCache(cacheKey);
+    if (cached) {
+      return res.json(JSON.parse(cached));
+    }
+
     const [themes, total] = await Promise.all([
       Theme.find().skip(offset).limit(limit),
       Theme.countDocuments(),
     ]);
 
-    return res.json({ themes, total, offset, limit });
+    const result = { themes, total, offset, limit };
+    await setCache(cacheKey, JSON.stringify(result), config.CACHE_TTL_THEME);
+    return res.json(result);
   } catch (err) {
     return next(err);
   }
@@ -211,24 +223,24 @@ router.put(
       }
 
       // Read and parse theme configuration
-      let config;
+      let themeConfig;
       try {
         const fileContents = await fs.readFile(
           path.join(themeDir, 'config.json'),
           'utf-8'
         );
-        config = JSON.parse(fileContents);
+        themeConfig = JSON.parse(fileContents);
 
         // Validate required fields
-        if (!config.name || typeof config.name !== 'string')
+        if (!themeConfig.name || typeof themeConfig.name !== 'string')
           throw new Error('Missing name');
-        if (!config.handle || typeof config.handle !== 'string')
+        if (!themeConfig.handle || typeof themeConfig.handle !== 'string')
           throw new Error('Missing handle');
-        if (!config.version || typeof config.version !== 'string')
+        if (!themeConfig.version || typeof themeConfig.version !== 'string')
           throw new Error('Missing version');
-        if (!config.description || typeof config.description !== 'string')
+        if (!themeConfig.description || typeof themeConfig.description !== 'string')
           throw new Error('Missing description');
-        if (!config.previewImage || typeof config.previewImage !== 'string')
+        if (!themeConfig.previewImage || typeof themeConfig.previewImage !== 'string')
           throw new Error('Missing previewImage');
       } catch (err) {
         return res.status(400).json({ message: err.message });
@@ -244,7 +256,7 @@ router.put(
       // Update theme in database
       const updatedTheme = await Theme.findByIdAndUpdate(
         id,
-        { ...config, paths },
+        { ...themeConfig, paths },
         { new: true }
       );
 

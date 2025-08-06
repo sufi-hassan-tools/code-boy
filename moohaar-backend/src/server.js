@@ -1,3 +1,4 @@
+import './apm.js'; // eslint-disable-line import/extensions
 import express from 'express';
 import path from 'path';
 import helmet from 'helmet';
@@ -15,8 +16,81 @@ import storeRoutes from './routes/store.routes';
 import healthRoutes from './routes/health.routes';
 import errorHandler from './middleware/errorHandler';
 import logger from './utils/logger';
+import { initCache, getCache, setCache } from './services/cache.service';
 
 export const app = express();
+
+let register;
+let httpRequestDuration;
+let httpRequestsTotal;
+let httpRequestErrors;
+let metricsEnabled = false;
+const fallbackMetrics = { total: 0, errors: 0 };
+
+try {
+  const promClient = (await import('prom-client')).default; // eslint-disable-line import/no-unresolved
+  register = new promClient.Registry();
+  promClient.collectDefaultMetrics({ register });
+
+  httpRequestDuration = new promClient.Histogram({
+    name: 'http_request_duration_seconds',
+    help: 'Duration of HTTP requests in seconds',
+    labelNames: ['method', 'route', 'status'],
+    buckets: [0.1, 0.5, 1, 2, 5],
+  });
+  httpRequestsTotal = new promClient.Counter({
+    name: 'http_requests_total',
+    help: 'Total number of HTTP requests',
+    labelNames: ['method', 'route', 'status'],
+  });
+  httpRequestErrors = new promClient.Counter({
+    name: 'http_request_errors_total',
+    help: 'Total number of error HTTP responses',
+    labelNames: ['method', 'route', 'status'],
+  });
+
+  register.registerMetric(httpRequestDuration);
+  register.registerMetric(httpRequestsTotal);
+  register.registerMetric(httpRequestErrors);
+  metricsEnabled = true;
+} catch (err) {
+  logger.warn({ message: 'Prometheus client not available', error: err.message });
+}
+
+app.use((req, res, next) => {
+  const start = process.hrtime();
+  res.on('finish', () => {
+    const duration = process.hrtime(start);
+    const seconds = duration[0] + duration[1] / 1e9;
+    const route = req.route?.path || req.path;
+    const labels = { method: req.method, route, status: res.statusCode };
+    if (metricsEnabled) {
+      httpRequestsTotal.inc(labels);
+      if (res.statusCode >= 400) {
+        httpRequestErrors.inc(labels);
+      }
+      httpRequestDuration.observe(labels, seconds);
+    } else {
+      fallbackMetrics.total += 1;
+      if (res.statusCode >= 400) {
+        fallbackMetrics.errors += 1;
+      }
+    }
+  });
+  next();
+});
+
+app.get('/metrics', async (_req, res) => {
+  if (metricsEnabled) {
+    res.set('Content-Type', register.contentType);
+    res.end(await register.metrics());
+  } else {
+    res.type('text/plain').send(
+      `http_requests_total ${fallbackMetrics.total}\n` +
+        `http_request_errors_total ${fallbackMetrics.errors}\n`,
+    );
+  }
+});
 
 // Apply secure HTTP headers
 app.use(
@@ -53,7 +127,7 @@ app.use(async (req, res, next) => {
     allowed = true;
   } else {
     try {
-      const hostname = new URL(origin).hostname;
+      const { hostname } = new URL(origin);
       // Allow known custom domains mapped to stores
       const store = await Store.findOne({ customDomain: hostname });
       if (store) allowed = true;
@@ -149,7 +223,15 @@ app.use(async (req, res, next) => {
 app.use('/api/themes', themeRoutes);
 app.use('/api/store', storeRoutes);
 app.use('/health', healthRoutes);
-app.use('/themes', express.static(config.THEMES_PATH));
+app.use(
+  '/themes',
+  express.static(config.THEMES_PATH, {
+    etag: true,
+    setHeaders: (res) => {
+      res.set('Cache-Control', 'public, max-age=86400');
+    },
+  }),
+);
 
 // Public storefront - no auth required
 app.get('/*', async (req, res, next) => {
@@ -157,6 +239,11 @@ app.get('/*', async (req, res, next) => {
     const { store } = req;
     if (!store || !store.activeTheme) {
       return res.status(404).send('Store not found');
+    }
+    const cacheKey = `render:${store.id}:${req.path}`;
+    const cached = await getCache(cacheKey);
+    if (cached) {
+      return res.send(cached);
     }
     const { activeTheme } = store;
     const theme = await Theme.findById(activeTheme);
@@ -193,6 +280,7 @@ app.get('/*', async (req, res, next) => {
       store,
       products: store.products || [],
     });
+    await setCache(cacheKey, html, config.CACHE_TTL_CONTEXT);
     return res.send(html);
   } catch (err) {
     return next(err);
@@ -205,6 +293,7 @@ app.use(errorHandler);
 const start = async () => {
   try {
     await connectDB();
+    await initCache();
     app.listen(config.PORT, () => {
       logger.info({ message: `Server running on port ${config.PORT}` });
     });
