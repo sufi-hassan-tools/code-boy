@@ -4,7 +4,8 @@ const User = require('../models/User');
 
 async function auth(req, res, next) {
   const authHeader = req.headers.authorization || '';
-  const token = authHeader.startsWith('Bearer ') ? authHeader.split(' ')[1] : null;
+  const token = req.cookies?.accessToken
+    || (authHeader.startsWith('Bearer ') ? authHeader.split(' ')[1] : null);
   if (!token) {
     return res.status(401).json({ msg: 'No token' });
   }

@@ -9,6 +9,28 @@ axios.defaults.withCredentials = true;
 axios.defaults.xsrfCookieName = 'XSRF-TOKEN';
 axios.defaults.xsrfHeaderName = 'X-CSRF-Token';
 
+let refreshPromise = null;
+
+axios.interceptors.response.use(
+  res => res,
+  async err => {
+    const { response, config } = err;
+    if (response && response.status === 401 && !config._retry) {
+      config._retry = true;
+      try {
+        refreshPromise = refreshPromise || axios.post('/api/auth/refresh');
+        await refreshPromise;
+        refreshPromise = null;
+        return axios(config);
+      } catch (refreshErr) {
+        refreshPromise = null;
+        return Promise.reject(refreshErr);
+      }
+    }
+    return Promise.reject(err);
+  }
+);
+
 // Prime CSRF token cookie for the session
 if (process.env.NODE_ENV !== 'test') {
   axios.get('/api/csrf-token');
