@@ -1,8 +1,7 @@
-/* eslint-disable import/extensions */
 import fs from 'fs/promises';
 import path from 'path';
 import unzipper from 'unzipper';
-import Theme from '../models/theme.model.js';
+import Theme from '../models/theme.model';
 
 /**
  * Seeds the default Moohaar theme if it does not exist.

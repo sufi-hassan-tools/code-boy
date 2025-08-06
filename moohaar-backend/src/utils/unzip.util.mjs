@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { Open } from 'unzipper';
+import logger from './logger';
 
 // Allowed file extensions for extraction
 const VALID_EXT = /\.(liquid|js|css|png|jpe?g|webp|svg)$/i;
@@ -36,7 +37,7 @@ export async function sanitizeAndUnzip(zipPath, destPath) {
     const fileBuffer = await file.buffer();
     const fileContent = fileBuffer.toString('utf8');
     if (DISALLOWED_PATTERN.test(fileContent)) {
-      console.warn(`Malicious content detected in ${entryPath}`);
+      logger.warn(`Malicious content detected in ${entryPath}`);
       await fs.promises.rm(absoluteDest, { recursive: true, force: true });
       throw new MaliciousContentError(
         `Malicious content detected in file ${file.path}`,

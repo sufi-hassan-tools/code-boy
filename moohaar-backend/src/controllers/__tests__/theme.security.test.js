@@ -1,3 +1,4 @@
+/* eslint-env jest */
 import request from 'supertest';
 import express from 'express';
 import jwt from 'jsonwebtoken';
@@ -27,9 +28,10 @@ beforeAll(async () => {
 
   // Ensure modules outside this package can resolve dependencies
   process.env.NODE_PATH = path.join(process.cwd(), 'node_modules');
+  // eslint-disable-next-line no-underscore-dangle
   module.Module._initPaths();
 
-  ({ default: themeRouter } = await import('../theme.controller.js'));
+  ({ default: themeRouter } = await import('../theme.controller'));
 
   token = jwt.sign({ id: '1', role: 'admin' }, process.env.JWT_SECRET);
   app = express();

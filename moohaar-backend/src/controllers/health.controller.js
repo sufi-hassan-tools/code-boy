@@ -1,9 +1,8 @@
 import mongoose from 'mongoose';
-import Theme from '../models/theme.model.js';
 
 // GET /health
 // Provides basic service health information
-export const healthCheck = async (req, res, next) => {
+const healthCheck = async (req, res, next) => {
   try {
     const mongo = mongoose.connection.readyState === 1 ? 'connected' : 'disconnected';
     const memoryUsage = process.memoryUsage().rss;
@@ -16,3 +15,5 @@ export const healthCheck = async (req, res, next) => {
     return next(err);
   }
 };
+
+export default healthCheck;

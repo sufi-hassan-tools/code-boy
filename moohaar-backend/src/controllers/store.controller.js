@@ -1,8 +1,8 @@
-import Store from '../models/store.model.js';
+import Store from '../models/store.model';
 
 // POST /api/store/:storeId/theme
 // Sets a store's active theme reference
-export const setActiveTheme = async (req, res, next) => {
+const setActiveTheme = async (req, res, next) => {
   try {
     const { storeId } = req.params;
     const { themeId } = req.body;
@@ -17,4 +17,4 @@ export const setActiveTheme = async (req, res, next) => {
   }
 };
 
-export default { setActiveTheme };
+export default setActiveTheme;

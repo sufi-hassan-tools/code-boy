@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { setActiveTheme } from '../controllers/store.controller.js';
-import { auth, authorizeStoreOwner } from '../middleware/auth.middleware.js';
+import setActiveTheme from '../controllers/store.controller';
+import { auth, authorizeStoreOwner } from '../middleware/auth.middleware';
 
 const router = Router();
 

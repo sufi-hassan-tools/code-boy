@@ -1,10 +1,10 @@
 import jwt from 'jsonwebtoken';
-import config from '../config/index.js';
-import Store from '../models/store.model.js';
+import config from '../config/index';
+import Store from '../models/store.model';
 
 // JWT authentication middleware
 export const auth = (req, res, next) => {
-  const header = req.headers.authorization;
+  const { authorization: header } = req.headers;
   if (!header || !header.startsWith('Bearer ')) {
     return res.status(401).json({ message: 'Unauthorized' });
   }

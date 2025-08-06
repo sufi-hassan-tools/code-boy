@@ -1,7 +1,8 @@
+/* eslint-env jest */
 import request from 'supertest';
 import mongoose from 'mongoose';
 import express from 'express';
-import { healthCheck } from '../../controllers/health.controller.js';
+import healthCheck from '../health.controller';
 
 const app = express();
 app.get('/health', healthCheck);
