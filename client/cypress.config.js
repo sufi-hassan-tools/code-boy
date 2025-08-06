@@ -1,8 +1,9 @@
-const { defineConfig } = require('cypress');
+const baseUrl = process.env.RENDER_URL || 'https://moohaarapp.onrender.com';
 
-module.exports = defineConfig({
+module.exports = {
   e2e: {
-    baseUrl: 'http://localhost:4173',
-    supportFile: false,
+    baseUrl,
+    specPattern: 'cypress/e2e/**/*.cy.js',
+    supportFile: 'cypress/support/index.js',
   },
-});
+};
