@@ -3,6 +3,8 @@ import path from 'path';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import { access, readFile } from 'fs/promises';
+import crypto from 'crypto';
+import cookie from 'cookie';
 import config from './config/index';
 import connectDB from './services/db.service';
 import engine from './services/liquid.service';
@@ -32,6 +34,73 @@ app.use(
 
 // Parse JSON bodies
 app.use(express.json());
+
+// Basic cookie parsing for CSRF protection
+app.use((req, _res, next) => {
+  const { cookie: rawCookie } = req.headers;
+  req.cookies = rawCookie ? cookie.parse(rawCookie) : {};
+  next();
+});
+
+// Restrictive CORS handling
+const moohaarOrigin = /^https:\/\/([a-z0-9-]+\.)*moohaar\.com$/i;
+app.use(async (req, res, next) => {
+  const { origin } = req.headers;
+  if (!origin) return next();
+
+  let allowed = false;
+  if (moohaarOrigin.test(origin)) {
+    allowed = true;
+  } else {
+    try {
+      const hostname = new URL(origin).hostname;
+      // Allow known custom domains mapped to stores
+      const store = await Store.findOne({ customDomain: hostname });
+      if (store) allowed = true;
+    } catch (err) {
+      allowed = false;
+    }
+  }
+
+  if (allowed) {
+    res.header('Access-Control-Allow-Origin', origin);
+    res.header('Access-Control-Allow-Credentials', 'true');
+    res.header('Access-Control-Allow-Headers', 'Content-Type, X-CSRF-Token');
+    res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS');
+    res.header('Vary', 'Origin');
+    if (req.method === 'OPTIONS') return res.sendStatus(200);
+    return next();
+  }
+
+  if (req.method === 'OPTIONS') return res.sendStatus(403);
+  return res.status(403).json({ message: 'CORS not allowed' });
+});
+
+// CSRF token utilities
+const generateCsrfToken = () => crypto.randomBytes(24).toString('hex');
+
+// Endpoint to issue CSRF token
+app.get('/api/csrf-token', (req, res) => {
+  const token = generateCsrfToken();
+  res.cookie('XSRF-TOKEN', token, {
+    sameSite: 'strict',
+    secure: process.env.NODE_ENV === 'production',
+  });
+  res.json({ csrfToken: token });
+});
+
+// CSRF protection for state-changing requests
+app.use((req, res, next) => {
+  if (!['POST', 'PUT', 'DELETE'].includes(req.method)) return next();
+  const headerToken =
+    req.headers['x-csrf-token'] ||
+    req.headers['csrf-token'] ||
+    req.headers['xsrf-token'] ||
+    req.headers['x-xsrf-token'];
+  const cookieToken = req.cookies['XSRF-TOKEN'];
+  if (headerToken && cookieToken && headerToken === cookieToken) return next();
+  return res.status(403).json({ message: 'Invalid CSRF token' });
+});
 
 // Rate limiters for auth and uploads
 const authLimiter = rateLimit({
