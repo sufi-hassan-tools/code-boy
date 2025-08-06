@@ -1,4 +1,36 @@
 {
-  "extends": ["airbnb-base", "prettier"],
-  "env": { "browser": true, "es2022": true }
+  "extends": [
+    "airbnb-base",
+    "prettier"
+  ],
+  "env": {
+    "browser": true,
+    "es2022": true
+  },
+  "plugins": [
+    "cypress"
+  ],
+  "overrides": [
+    {
+      "files": [
+        "cypress.config.js",
+        "cypress/**/*.js"
+      ],
+      "env": {
+        "cypress/globals": true
+      },
+      "plugins": [
+        "cypress"
+      ],
+      "rules": {
+        "import/no-extraneous-dependencies": [
+          "error",
+          {
+            "devDependencies": true
+          }
+        ],
+        "no-undef": "off"
+      }
+    }
+  ]
 }
