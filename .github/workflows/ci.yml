@@ -38,9 +38,13 @@ jobs:
       - name: Test client
         run: npm test
         working-directory: client
-      - name: E2E tests
-        run: npm run test:e2e
-        working-directory: client
+      - name: Run client E2E against Render
+        working-directory: ./client
+        env:
+          RENDER_URL: https://moohaarapp.onrender.com
+        run: |
+          npm ci
+          npx cypress run
       - name: Upload client coverage
         if: always()
         uses: actions/upload-artifact@v4

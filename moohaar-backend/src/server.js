@@ -118,12 +118,13 @@ app.use((req, _res, next) => {
 
 // Restrictive CORS handling
 const moohaarOrigin = /^https:\/\/([a-z0-9-]+\.)*moohaar\.com$/i;
+const allowedOrigins = ['https://moohaarapp.onrender.com'];
 app.use(async (req, res, next) => {
   const { origin } = req.headers;
   if (!origin) return next();
 
   let allowed = false;
-  if (moohaarOrigin.test(origin)) {
+  if (allowedOrigins.includes(origin) || moohaarOrigin.test(origin)) {
     allowed = true;
   } else {
     try {
