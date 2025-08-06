@@ -9,8 +9,9 @@ import { auth, authorizeAdmin } from '../middleware/auth.middleware';
 import logger from '../utils/logger';
 
 // Utility for safe extraction and scanning of theme archives
-import unzipTheme, {
+import {
   MaliciousContentError,
+  unzipFile,
 } from '../utils/unzip.util';
 
 // Multer configuration: store uploads in configured path with size and type checks
@@ -40,7 +41,7 @@ router.post(
 
       // Extract uploaded ZIP safely then remove the temporary archive
       try {
-        await unzipTheme(req.file.path, destPath);
+        await unzipFile(req.file.path, destPath);
       } catch (err) {
         await fs.unlink(req.file.path);
         if (err instanceof MaliciousContentError) {
@@ -188,7 +189,7 @@ router.put(
       // Remove existing directory and extract new one
       await fs.rm(themeDir, { recursive: true, force: true });
       try {
-        await unzipTheme(req.file.path, themeDir);
+        await unzipFile(req.file.path, themeDir);
       } catch (err) {
         await fs.unlink(req.file.path);
         if (err instanceof MaliciousContentError) {
