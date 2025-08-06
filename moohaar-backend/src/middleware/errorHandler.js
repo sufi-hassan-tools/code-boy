@@ -1,7 +1,8 @@
-import logger from '../utils/logger.js';
+import logger from '../utils/logger';
 
 // Centralized error handling middleware
 // Logs the stack and sends consistent JSON responses
+/* eslint-disable-next-line no-unused-vars */
 export default (err, req, res, _next) => {
   logger.error({ message: err.message, stack: err.stack });
   if (err.name === 'ValidationError') {

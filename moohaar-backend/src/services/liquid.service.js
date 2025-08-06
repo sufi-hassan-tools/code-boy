@@ -1,7 +1,7 @@
 import { Liquid } from 'liquidjs';
 import { JSDOM } from 'jsdom';
 import createDOMPurify from 'dompurify';
-import config from '../config/index.js';
+import config from '../config/index';
 
 // Configure LiquidJS with template caching for performance
 const engine = new Liquid({
@@ -12,7 +12,7 @@ const engine = new Liquid({
 });
 
 // Register HTML sanitization filter using DOMPurify
-const window = new JSDOM('').window;
+const {window} = new JSDOM('');
 const DOMPurify = createDOMPurify(window);
 engine.registerFilter('sanitize', (html) => DOMPurify.sanitize(html));
 

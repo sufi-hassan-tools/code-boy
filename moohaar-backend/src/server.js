@@ -3,16 +3,16 @@ import path from 'path';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import { access, readFile } from 'fs/promises';
-import config from './config/index.js';
-import connectDB from './services/db.service.js';
-import engine from './services/liquid.service.js';
-import Store from './models/store.model.js';
-import Theme from './models/theme.model.js';
-import themeRoutes from './routes/theme.routes.js';
-import storeRoutes from './routes/store.routes.js';
-import healthRoutes from './routes/health.routes.js';
-import errorHandler from './middleware/errorHandler.js';
-import logger from './utils/logger.js';
+import config from './config/index';
+import connectDB from './services/db.service';
+import engine from './services/liquid.service';
+import Store from './models/store.model';
+import Theme from './models/theme.model';
+import themeRoutes from './controllers/theme.controller';
+import storeRoutes from './routes/store.routes';
+import healthRoutes from './routes/health.routes';
+import errorHandler from './middleware/errorHandler';
+import logger from './utils/logger';
 
 export const app = express();
 
@@ -57,7 +57,7 @@ app.use((req, _res, next) => {
 // Domain-mapping middleware attaches store based on hostname
 app.use(async (req, res, next) => {
   try {
-    const headerHost = req.headers.host;
+    const { host: headerHost } = req.headers;
     if (headerHost) {
       const host = headerHost.split(':')[0];
       let store = await Store.findOne({ customDomain: host });
@@ -85,11 +85,12 @@ app.use('/themes', express.static(config.THEMES_PATH));
 // Public storefront - no auth required
 app.get('/*', async (req, res, next) => {
   try {
-    const store = req.store;
+    const { store } = req;
     if (!store || !store.activeTheme) {
       return res.status(404).send('Store not found');
     }
-    const theme = await Theme.findById(store.activeTheme);
+    const { activeTheme } = store;
+    const theme = await Theme.findById(activeTheme);
     if (!theme) {
       return res.status(404).send('Theme not found');
     }

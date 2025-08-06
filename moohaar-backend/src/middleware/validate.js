@@ -1,4 +1,4 @@
-import Joi from 'joi';
+import Joi from 'joi'; // eslint-disable-line import/no-unresolved
 
 // Joi validation middleware factory
 // Validates req.body against the provided schema and
