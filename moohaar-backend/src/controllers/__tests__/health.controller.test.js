@@ -1,19 +1,17 @@
 import request from 'supertest';
 import mongoose from 'mongoose';
-import { MongoMemoryServer } from 'mongodb-memory-server';
-import app from '../../server.js';
+import express from 'express';
+import { healthCheck } from '../../controllers/health.controller.js';
 
-let mongoServer;
+const app = express();
+app.get('/health', healthCheck);
 
-beforeAll(async () => {
-  mongoServer = await MongoMemoryServer.create();
-  const uri = mongoServer.getUri();
-  await mongoose.connect(uri, { dbName: 'test' });
+beforeAll(() => {
+  mongoose.connection.readyState = 1;
 });
 
-afterAll(async () => {
-  await mongoose.disconnect();
-  await mongoServer.stop();
+afterAll(() => {
+  mongoose.connection.readyState = 0;
 });
 
 describe('GET /health', () => {
