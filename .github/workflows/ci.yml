@@ -1,0 +1,52 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Install backend deps
+        run: npm install
+        working-directory: moohaar-backend
+      - name: Lint backend
+        run: npm run lint
+        working-directory: moohaar-backend
+      - name: Test backend
+        run: npm test
+        working-directory: moohaar-backend
+      - name: Upload backend coverage
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-coverage
+          path: moohaar-backend/coverage
+      - name: Install client deps
+        run: npm install
+        working-directory: client
+      - name: Lint client
+        run: npm run lint
+        working-directory: client
+      - name: Test client
+        run: npm test
+        working-directory: client
+      - name: E2E tests
+        run: npm run test:e2e
+        working-directory: client
+      - name: Upload client coverage
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: client-coverage
+          path: client/coverage
+      - name: Build frontend
+        run: npm run build:prod
+        working-directory: client

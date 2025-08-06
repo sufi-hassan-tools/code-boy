@@ -1,7 +1,9 @@
+import logger from '../utils/logger.js';
+
 // Centralized error handling middleware
 // Logs the stack and sends consistent JSON responses
 export default (err, req, res, _next) => {
-  console.error(err.stack);
+  logger.error({ message: err.message, stack: err.stack });
   if (err.name === 'ValidationError') {
     return res.status(400).json({ message: err.message });
   }

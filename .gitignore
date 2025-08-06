@@ -13,6 +13,11 @@ client/dist/
 server/node_modules/
 client/node_modules/
 
+# Test coverage
+coverage/
+moohaar-backend/coverage/
+client/coverage/
+
 # OS
 .DS_Store
 

@@ -12,8 +12,9 @@ import themeRoutes from './routes/theme.routes.js';
 import storeRoutes from './routes/store.routes.js';
 import healthRoutes from './routes/health.routes.js';
 import errorHandler from './middleware/errorHandler.js';
+import logger from './utils/logger.js';
 
-const app = express();
+export const app = express();
 
 // Apply secure HTTP headers
 app.use(
@@ -47,6 +48,12 @@ const uploadLimiter = rateLimit({
 app.use('/api/auth', authLimiter);
 app.use('/api/themes', uploadLimiter);
 
+// Request logging
+app.use((req, _res, next) => {
+  logger.info({ method: req.method, url: req.url });
+  next();
+});
+
 // Domain-mapping middleware attaches store based on hostname
 app.use(async (req, res, next) => {
   try {
@@ -64,7 +71,7 @@ app.use(async (req, res, next) => {
     }
     return next();
   } catch (err) {
-    console.error('Domain mapping failed', err);
+    logger.error({ message: 'Domain mapping failed', error: err.message });
     return next(err);
   }
 });
@@ -129,12 +136,16 @@ const start = async () => {
   try {
     await connectDB();
     app.listen(config.PORT, () => {
-      console.log(`Server running on port ${config.PORT}`);
+      logger.info({ message: `Server running on port ${config.PORT}` });
     });
   } catch (err) {
-    console.error('Failed to start server', err);
+    logger.error({ message: 'Failed to start server', error: err.message });
     process.exit(1);
   }
 };
 
-start();
+if (process.env.NODE_ENV !== 'test') {
+  start();
+}
+
+export default app;
