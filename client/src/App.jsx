@@ -8,6 +8,9 @@ const Dashboard = React.lazy(() => import('./pages/Dashboard'));
 const AdminDashboard = React.lazy(() => import('./admin/pages/Dashboard'));
 const StoresList = React.lazy(() => import('./admin/pages/StoresList'));
 const StoreDetails = React.lazy(() => import('./admin/pages/StoreDetails'));
+const Users = React.lazy(() => import('./admin/pages/Users'));
+const ThemeAdmin = React.lazy(() => import('./admin/pages/ThemeAdmin'));
+const Settings = React.lazy(() => import('./admin/pages/Settings'));
 import Profile from './pages/Profile';
 import Analytics from './pages/Analytics';
 import CreateStore from './pages/CreateStore';
@@ -51,6 +54,9 @@ export default function App() {
           <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
           <Route path="/admin/stores" element={<AdminRoute><StoresList /></AdminRoute>} />
           <Route path="/admin/stores/:storeId" element={<AdminRoute><StoreDetails /></AdminRoute>} />
+          <Route path="/admin/users" element={<AdminRoute><Users /></AdminRoute>} />
+          <Route path="/admin/themes" element={<AdminRoute><ThemeAdmin /></AdminRoute>} />
+          <Route path="/admin/settings" element={<AdminRoute><Settings /></AdminRoute>} />
           <Route path="/upload-theme" element={<PrivateRoute><ThemeUpload /></PrivateRoute>} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password/:token" element={<ResetPassword />} />
