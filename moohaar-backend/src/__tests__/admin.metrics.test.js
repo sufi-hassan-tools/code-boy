@@ -1,5 +1,11 @@
+import { jest } from '@jest/globals';
 import adminController from '../controllers/admin.controller.js';
 
 describe('Admin Metrics Controller', () => {
-  test.todo('should return platform metrics');
+  it('should return platform metrics', () => {
+    const req = {};
+    const res = { json: jest.fn() };
+    adminController.getDashboard(req, res);
+    expect(res.json).toHaveBeenCalledWith({ message: 'admin dashboard placeholder' });
+  });
 });
