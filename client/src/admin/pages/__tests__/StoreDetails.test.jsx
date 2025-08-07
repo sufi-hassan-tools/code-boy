@@ -1,9 +1,11 @@
 import { render } from '@testing-library/react';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
-import axios from 'axios';
 import StoreDetails from '../StoreDetails.jsx';
+import { getStoreMetrics } from '../../../services/api.js';
 
-jest.mock('axios');
+jest.mock('../../../services/api.js', () => ({
+  getStoreMetrics: jest.fn(),
+}));
 jest.mock('recharts', () => ({
   LineChart: () => null,
   Line: () => null,
@@ -17,7 +19,7 @@ jest.mock('recharts', () => ({
 
 describe('StoreDetails Page', () => {
   it('renders without crashing', () => {
-    axios.get.mockResolvedValue({ data: {} });
+    getStoreMetrics.mockResolvedValue({ data: {} });
     render(
       <MemoryRouter initialEntries={['/admin/stores/1']}>
         <Routes>
