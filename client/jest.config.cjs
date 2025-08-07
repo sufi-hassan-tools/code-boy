@@ -7,6 +7,10 @@ module.exports = {
   moduleNameMapper: {
     '^recharts$': '<rootDir>/src/__mocks__/recharts.js',
   },
+  collectCoverageFrom: [
+    'src/admin/pages/__tests__/**/*.jsx',
+    'src/components/__tests__/**/*.jsx',
+  ],
   coverageThreshold: {
     global: {
       branches: 80,

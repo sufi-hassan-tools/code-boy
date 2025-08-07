@@ -8,6 +8,8 @@
   "scripts": {
     "start": "node src/server.js",
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --runInBand --coverage",
+    "test:unit": "npm test",
+    "test:integration": "npm test",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write ."
