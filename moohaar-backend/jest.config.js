@@ -1,7 +1,7 @@
 export default {
   testEnvironment: 'node',
-  coveragePathIgnorePatterns: ['/node_modules/', 'src/server.js'],
-  collectCoverageFrom: ['src/__tests__/**/*.js', 'src/controllers/__tests__/**/*.js'],
+  coveragePathIgnorePatterns: ['/node_modules/', 'src/server.js', '/__tests__/'],
+  collectCoverageFrom: ['src/**/*.{js,jsx}'],
   coverageThreshold: {
     global: {
       branches: 80,
