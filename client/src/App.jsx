@@ -5,6 +5,7 @@ import Login from './pages/Login';
 import Signup from './pages/Signup';
 // Lazily load heavy pages for route-based code splitting
 const Dashboard = React.lazy(() => import('./pages/Dashboard'));
+const AdminDashboard = React.lazy(() => import('./admin/pages/Dashboard'));
 import Profile from './pages/Profile';
 import Analytics from './pages/Analytics';
 import CreateStore from './pages/CreateStore';
@@ -13,6 +14,7 @@ import ResetPassword from './pages/ResetPassword';
 const ThemeStore = React.lazy(() => import('./pages/ThemeStore'));
 const ThemeUpload = React.lazy(() => import('./pages/ThemeUpload'));
 import Loading from './components/Loading';
+import AdminRoute from './components/AdminRoute';
 import axios from 'axios';
 
 const PrivateRoute = ({ children }) => {
@@ -44,6 +46,7 @@ export default function App() {
           <Route path="/analytics" element={<PrivateRoute><Analytics /></PrivateRoute>} />
           <Route path="/create-store" element={<PrivateRoute><CreateStore /></PrivateRoute>} />
           <Route path="/themes" element={<ThemeStore />} />
+          <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
           <Route path="/upload-theme" element={<PrivateRoute><ThemeUpload /></PrivateRoute>} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password/:token" element={<ResetPassword />} />
