@@ -1,42 +1,28 @@
-import { useState } from 'react';
-
-export default function UserTable({ onEdit }) {
-  const [search, setSearch] = useState('');
-
+export default function UserTable({ users = [], onEdit }) {
   return (
-    <div>
-      <input
-        type="text"
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        placeholder="Search users..."
-        className="w-full border rounded p-2 mb-4"
-      />
-      <table className="w-full">
-        <thead>
-          <tr className="text-left">
-            <th>Email</th>
-            <th>Role</th>
-            <th>Status</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>user@example.com</td>
-            <td>user</td>
-            <td>active</td>
+    <table className="w-full">
+      <thead>
+        <tr className="text-left">
+          <th>Email</th>
+          <th>Role</th>
+          <th>Status</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {users.map((user) => (
+          <tr key={user.id}>
+            <td>{user.email}</td>
+            <td>{user.role}</td>
+            <td>{user.status}</td>
             <td>
-              <button
-                onClick={() => onEdit({ id: 1, email: 'user@example.com' })}
-                className="text-blue-600"
-              >
+              <button onClick={() => onEdit(user)} className="text-blue-600">
                 Edit
               </button>
             </td>
           </tr>
-        </tbody>
-      </table>
-    </div>
+        ))}
+      </tbody>
+    </table>
   );
 }

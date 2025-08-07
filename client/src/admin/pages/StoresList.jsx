@@ -1,29 +1,18 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import axios from 'axios';
 import AdminLayout from '../layout/AdminLayout';
+import Loading from '../../components/Loading';
+import useApi from '../../hooks/useApi';
+import { getStores } from '../../services/api';
 
 export default function StoresList() {
-  const [stores, setStores] = useState([]);
-  const [total, setTotal] = useState(0);
   const [offset, setOffset] = useState(0);
   const [limit, setLimit] = useState(10);
   const [search, setSearch] = useState('');
 
-  useEffect(() => {
-    axios
-      .get('/api/admin/stores', {
-        params: { offset, limit, search },
-      })
-      .then((res) => {
-        setStores(res.data.stores || []);
-        setTotal(res.data.total || 0);
-      })
-      .catch(() => {
-        setStores([]);
-        setTotal(0);
-      });
-  }, [offset, limit, search]);
+  const { data, loading, error } = useApi(getStores, offset, limit, search);
+  const stores = data?.stores || [];
+  const total = data?.total || 0;
 
   const handleSearchChange = (e) => {
     setSearch(e.target.value);
@@ -52,25 +41,32 @@ export default function StoresList() {
           placeholder="Search stores..."
           className="w-full border rounded p-2"
         />
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {stores.map((store) => (
-            <div key={store.id} className="bg-white rounded shadow p-4 space-y-2">
-              <Link to={`/store/${store.handle}`} className="text-lg font-semibold text-blue-600">
-                {store.name}
-              </Link>
-              <div className="text-sm text-gray-600">@{store.handle}</div>
-              <div className="text-sm">{store.ownerEmail}</div>
-              <div className="flex gap-2">
-                <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">
-                  Sales: {store.sales7d}
-                </span>
-                <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">
-                  Sessions: {store.sessions7d}
-                </span>
+        {error && (
+          <p className="text-red-500 text-center">{error.message || 'Failed to load stores'}</p>
+        )}
+        {loading ? (
+          <Loading />
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {stores.map((store) => (
+              <div key={store.id} className="bg-white rounded shadow p-4 space-y-2">
+                <Link to={`/store/${store.handle}`} className="text-lg font-semibold text-blue-600">
+                  {store.name}
+                </Link>
+                <div className="text-sm text-gray-600">@{store.handle}</div>
+                <div className="text-sm">{store.ownerEmail}</div>
+                <div className="flex gap-2">
+                  <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">
+                    Sales: {store.sales7d}
+                  </span>
+                  <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">
+                    Sessions: {store.sessions7d}
+                  </span>
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
         <div className="flex justify-between">
           <button
             onClick={back}
