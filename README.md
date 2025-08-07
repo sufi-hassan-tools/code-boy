@@ -21,9 +21,36 @@ Backend and frontend projects use Jest with an 80% global coverage threshold. Ex
 - Frontend unit tests: `npm test` from `client`
 - Frontend end-to-end tests: `npm run test:e2e` from `client`
 
+## CI/CD
+
+Pushes and pull requests to `main` trigger [`.github/workflows/ci.yml`](.github/workflows/ci.yml).
+The workflow checks out the code, sets up Node 20, installs dependencies,
+runs lint, unit, integration and end-to-end tests, builds the frontend for
+production and uploads coverage artifacts for both the backend and frontend.
+
 ## Docker
 
-Dockerfiles are provided for the client and backend. To run both services together use `docker-compose up --build` which respects environment variables like `BACKEND_PORT` and `CLIENT_PORT`.
+Dockerfiles in `client/` and `moohaar-backend/` install dependencies, run
+tests and produce production images. To build and start both admin services:
+
+```
+docker compose build
+docker compose up -d
+```
+
+The backend publishes a health check at `http://localhost:3000/health` and
+Prometheus metrics at `http://localhost:3000/metrics`. Winston logs are written
+to `moohaar-backend/logs` and also streamed to the console in development.
+
+To roll out updated images:
+
+```
+docker compose pull
+docker compose up -d --build
+```
+
+Ports and API endpoints can be customised via `BACKEND_PORT`, `CLIENT_PORT`
+and `VITE_API_URL` environment variables.
 
 See `client/package.json` and `server/package.json` for dependencies.
 
