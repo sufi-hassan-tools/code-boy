@@ -15,4 +15,7 @@ const PageViewSchema = new mongoose.Schema(
   { versionKey: false },
 );
 
+PageViewSchema.index({ storeId: 1, timestamp: 1 });
+PageViewSchema.index({ storeId: 1, sessionId: 1 });
+
 export default mongoose.model('PageView', PageViewSchema);

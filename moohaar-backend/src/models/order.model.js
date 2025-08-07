@@ -18,4 +18,6 @@ const OrderSchema = new mongoose.Schema(
   { timestamps: { createdAt: true, updatedAt: false } },
 );
 
+OrderSchema.index({ storeId: 1, createdAt: 1 });
+
 export default mongoose.model('Order', OrderSchema);
