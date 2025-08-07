@@ -12,6 +12,7 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
+    "build:prod": "echo \"No build step configured\"",
     "build": "npm run lint && npm run build:prod"
   },
   "dependencies": {
