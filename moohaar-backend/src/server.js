@@ -14,6 +14,8 @@ import Theme from './models/theme.model';
 import themeRoutes from './controllers/theme.controller';
 import storeRoutes from './routes/store.routes';
 import healthRoutes from './routes/health.routes';
+import authRoutes from './routes/auth.routes';
+import { auth, authorizeAdmin } from './middleware/auth.middleware';
 import errorHandler from './middleware/errorHandler';
 import logger from './utils/logger';
 import { initCache, getCache, setCache } from './services/cache.service';
@@ -221,6 +223,8 @@ app.use(async (req, res, next) => {
 });
 
 // API routes
+app.use('/api/auth', authRoutes);
+app.use('/api/admin', auth, authorizeAdmin);
 app.use('/api/themes', themeRoutes);
 app.use('/api/store', storeRoutes);
 app.use('/health', healthRoutes);
