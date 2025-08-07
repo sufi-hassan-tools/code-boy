@@ -9,6 +9,7 @@ const UserSchema = new mongoose.Schema(
       enum: ['admin', 'merchant'],
       default: 'merchant',
     },
+    refreshTokenHash: { type: String },
   },
   { timestamps: true }
 );
