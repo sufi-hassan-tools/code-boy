@@ -93,7 +93,9 @@ The authentication system provides:
 
 ## Environment Variables
 
-Create a `.env` file in the `server` directory with:
+The authentication server relies on environment variables for its
+configuration. For local development you can create a `server/.env` file (not
+tracked by git) containing:
 
 ```env
 MONGODB_URI=mongodb://localhost:27017/codeboy
@@ -103,6 +105,9 @@ RESET_EMAIL=your_email@gmail.com
 RESET_PASS=your_email_password
 PORT=5000
 ```
+
+Do not commit this file. In production, supply these values via environment
+variables or your platform's secrets manager.
 
 ## Installation and Setup
 
