@@ -5,13 +5,18 @@ const cookieParser = require("cookie-parser");
 const connectDB = require("./config/db");
 const path = require("path");
 
-dotenv.config({ path: path.join(__dirname, ".env") });
+dotenv.config();
 connectDB();
 
 const app = express();
 app.use(cors({ origin: true, credentials: true }));
 app.use(express.json());
 app.use(cookieParser());
+
+// Health check
+app.get("/health", (req, res) => {
+  res.json({ status: "ok" });
+});
 
 // API Routes
 app.use("/api/auth", require("./routes/auth"));
