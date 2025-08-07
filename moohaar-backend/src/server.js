@@ -15,6 +15,8 @@ import themeRoutes from './controllers/theme.controller';
 import storeRoutes from './routes/store.routes';
 import healthRoutes from './routes/health.routes';
 import authRoutes from './routes/auth.routes';
+import metricsRoutes from './routes/metrics.routes';
+import PageView from './models/pageview.model';
 import { auth, authorizeAdmin } from './middleware/auth.middleware';
 import errorHandler from './middleware/errorHandler';
 import logger from './utils/logger';
@@ -224,7 +226,7 @@ app.use(async (req, res, next) => {
 
 // API routes
 app.use('/api/auth', authRoutes);
-app.use('/api/admin', auth, authorizeAdmin);
+app.use('/api/admin', auth, authorizeAdmin, metricsRoutes);
 app.use('/api/themes', themeRoutes);
 app.use('/api/store', storeRoutes);
 app.use('/health', healthRoutes);
@@ -245,6 +247,35 @@ app.get('/*', async (req, res, next) => {
     if (!store || !store.activeTheme) {
       return res.status(404).send('Store not found');
     }
+
+    // Generate or read session ID cookie
+    let { sessionId } = req.cookies;
+    if (!sessionId) {
+      sessionId = crypto.randomBytes(16).toString('hex');
+      res.cookie('sessionId', sessionId, {
+        httpOnly: true,
+        sameSite: 'strict',
+        secure: process.env.NODE_ENV === 'production',
+      });
+    }
+
+    // Track page view and determine bounce
+    const sessionWindow = new Date(Date.now() - 30 * 60 * 1000);
+    const previous = await PageView.find({
+      storeId: store.id,
+      sessionId,
+      timestamp: { $gt: sessionWindow },
+    });
+    if (previous.length > 0) {
+      await PageView.updateMany({ storeId: store.id, sessionId }, { isBounce: false });
+    }
+    await PageView.create({
+      storeId: store.id,
+      sessionId,
+      path: req.path,
+      timestamp: new Date(),
+      isBounce: previous.length === 0,
+    });
     const cacheKey = `render:${store.id}:${req.path}`;
     const cached = await getCache(cacheKey);
     if (cached) {
