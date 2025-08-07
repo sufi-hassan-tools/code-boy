@@ -1,7 +1,8 @@
 import { Router } from 'express';
 import setActiveTheme from '../controllers/store.controller';
 import { createOrder } from '../controllers/order.controller';
-import { auth, authorizeStoreOwner } from '../middleware/auth.middleware';
+import auth from '../middleware/auth';
+import authorizeStoreOwner from '../middleware/authorizeStoreOwner';
 
 const router = Router();
 
