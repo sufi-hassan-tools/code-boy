@@ -15,14 +15,17 @@ jobs:
         with:
           node-version: 20
       - name: Install backend deps
-        run: npm install
         working-directory: moohaar-backend
+        run: npm ci
       - name: Lint backend
+        working-directory: moohaar-backend
         run: npm run lint
+      - name: Backend unit tests
         working-directory: moohaar-backend
-      - name: Test backend
-        run: npm test
+        run: npm run test:unit
+      - name: Backend integration tests
         working-directory: moohaar-backend
+        run: npm run test:integration
       - name: Upload backend coverage
         if: always()
         uses: actions/upload-artifact@v4
@@ -30,21 +33,19 @@ jobs:
           name: backend-coverage
           path: moohaar-backend/coverage
       - name: Install client deps
-        run: npm install
         working-directory: client
+        run: npm ci
       - name: Lint client
+        working-directory: client
         run: npm run lint
+      - name: Client unit tests
         working-directory: client
-      - name: Test client
-        run: npm test
+        run: npm run test:unit
+      - name: Client E2E tests
         working-directory: client
-      - name: Run client E2E against Render
-        working-directory: ./client
         env:
           RENDER_URL: https://moohaarapp.onrender.com
-        run: |
-          npm ci
-          npx cypress run
+        run: npm run test:e2e
       - name: Upload client coverage
         if: always()
         uses: actions/upload-artifact@v4
@@ -52,5 +53,5 @@ jobs:
           name: client-coverage
           path: client/coverage
       - name: Build frontend
-        run: npm run build:prod
         working-directory: client
+        run: npm run build:prod
