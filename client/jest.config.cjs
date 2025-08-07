@@ -4,6 +4,9 @@ module.exports = {
   transform: {
     '^.+\\.[jt]sx?$': 'babel-jest',
   },
+  moduleNameMapper: {
+    '^recharts$': '<rootDir>/src/__mocks__/recharts.js',
+  },
   coverageThreshold: {
     global: {
       branches: 80,
