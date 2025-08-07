@@ -56,17 +56,20 @@ See `client/package.json` and `server/package.json` for dependencies.
 
 ## Environment Variables
 
-Create a `.env` file inside the `server/` directory with the following
-variables:
+The server reads its configuration from environment variables. For local
+development you may create a `server/.env` file (which is ignored by git) with
+placeholders for the required values:
 
 ```
-MONGODB_URI=mongodb+srv://hassansufims7-8:hassansufims7-8@cluster0.h5vbmbs.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
+MONGODB_URI=mongodb+srv://<username>:<password>@cluster0.h5vbmbs.mongodb.net
+JWT_PRIVATE_KEY_BASE64=base64_encoded_private_key_here
+JWT_PUBLIC_KEY_BASE64=base64_encoded_public_key_here
 RESET_EMAIL=your_email@gmail.com
 RESET_PASS=your_email_password
 ```
 
-When deploying to [Render](https://render.com), add the same `MONGODB_URI`
-value in the **Environment** settings for your service.
+Never commit this file. In production, supply these values using environment
+variables or your hosting provider's secrets manager.
 
 ### moohaar-backend caching and APM
 
