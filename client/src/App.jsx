@@ -7,6 +7,7 @@ import Signup from './pages/Signup';
 const Dashboard = React.lazy(() => import('./pages/Dashboard'));
 const AdminDashboard = React.lazy(() => import('./admin/pages/Dashboard'));
 const StoresList = React.lazy(() => import('./admin/pages/StoresList'));
+const StoreDetails = React.lazy(() => import('./admin/pages/StoreDetails'));
 import Profile from './pages/Profile';
 import Analytics from './pages/Analytics';
 import CreateStore from './pages/CreateStore';
@@ -49,6 +50,7 @@ export default function App() {
           <Route path="/themes" element={<ThemeStore />} />
           <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
           <Route path="/admin/stores" element={<AdminRoute><StoresList /></AdminRoute>} />
+          <Route path="/admin/stores/:storeId" element={<AdminRoute><StoreDetails /></AdminRoute>} />
           <Route path="/upload-theme" element={<PrivateRoute><ThemeUpload /></PrivateRoute>} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password/:token" element={<ResetPassword />} />
