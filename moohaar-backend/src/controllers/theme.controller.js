@@ -3,11 +3,13 @@ import { Router } from 'express';
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs/promises';
+import Joi from 'joi'; // eslint-disable-line import/no-unresolved
 
 import Theme from '../models/theme.model';
 import engine from '../services/liquid.service';
 import auth from '../middleware/auth';
 import authorizeAdmin from '../middleware/authorizeAdmin';
+import validate from '../middleware/validate';
 import logger from '../utils/logger';
 import config from '../config/index';
 import { getCache, setCache } from '../services/cache.service';
@@ -30,6 +32,11 @@ const upload = multer({
 });
 
 const router = Router();
+
+const listQuerySchema = Joi.object({
+  offset: Joi.number().integer().min(0).default(0),
+  limit: Joi.number().integer().min(1).max(100).default(2),
+});
 
 // POST /api/themes
 // Handles theme ZIP upload, sanitizes contents, and persists metadata
@@ -110,36 +117,33 @@ router.post(
 
 // GET /api/themes
 // Returns paginated list of themes
-router.get('/', auth, async (req, res, next) => {
-  try {
-    let { offset = 0, limit = 2 } = req.query;
-    offset = parseInt(offset, 10);
-    limit = parseInt(limit, 10);
+router.get(
+  '/',
+  auth,
+  validate(listQuerySchema, 'query'),
+  async (req, res, next) => {
+    try {
+      const { offset, limit } = req.query;
 
-    if (Number.isNaN(offset) || Number.isNaN(limit)) {
-      return res
-        .status(400)
-        .json({ message: 'offset and limit must be integers' });
+      const cacheKey = `themes:${offset}:${limit}`;
+      const cached = await getCache(cacheKey);
+      if (cached) {
+        return res.json(JSON.parse(cached));
+      }
+
+      const [themes, total] = await Promise.all([
+        Theme.find().skip(offset).limit(limit),
+        Theme.countDocuments(),
+      ]);
+
+      const result = { themes, total, offset, limit };
+      await setCache(cacheKey, JSON.stringify(result), config.CACHE_TTL_THEME);
+      return res.json(result);
+    } catch (err) {
+      return next(err);
     }
-
-    const cacheKey = `themes:${offset}:${limit}`;
-    const cached = await getCache(cacheKey);
-    if (cached) {
-      return res.json(JSON.parse(cached));
-    }
-
-    const [themes, total] = await Promise.all([
-      Theme.find().skip(offset).limit(limit),
-      Theme.countDocuments(),
-    ]);
-
-    const result = { themes, total, offset, limit };
-    await setCache(cacheKey, JSON.stringify(result), config.CACHE_TTL_THEME);
-    return res.json(result);
-  } catch (err) {
-    return next(err);
-  }
-});
+  },
+);
 
 // GET /api/themes/:id/preview
 // Renders a preview of the theme's index template
