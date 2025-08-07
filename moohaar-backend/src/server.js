@@ -14,6 +14,8 @@ import Theme from './models/theme.model';
 import themeRoutes from './controllers/theme.controller';
 import storeRoutes from './routes/store.routes';
 import healthRoutes from './routes/health.routes';
+import authRoutes from './routes/auth.routes.js';
+import adminRoutes from './routes/admin.routes.js';
 import errorHandler from './middleware/errorHandler';
 import logger from './utils/logger';
 import { initCache, getCache, setCache } from './services/cache.service';
@@ -109,12 +111,15 @@ app.use(
 // Parse JSON bodies
 app.use(express.json());
 
-// Basic cookie parsing for CSRF protection
-app.use((req, _res, next) => {
-  const { cookie: rawCookie } = req.headers;
-  req.cookies = rawCookie ? cookie.parse(rawCookie) : {};
-  next();
-});
+import cookieParser from 'cookie-parser';
+
+//...
+
+// Parse JSON bodies
+app.use(express.json());
+
+// Cookie parser middleware
+app.use(cookieParser());
 
 // Restrictive CORS handling
 const moohaarOrigin = /^https:\/\/([a-z0-9-]+\.)*moohaar\.com$/i;
@@ -221,6 +226,8 @@ app.use(async (req, res, next) => {
 });
 
 // API routes
+app.use('/api/auth', authRoutes);
+app.use('/api/admin', adminRoutes);
 app.use('/api/themes', themeRoutes);
 app.use('/api/store', storeRoutes);
 app.use('/health', healthRoutes);
