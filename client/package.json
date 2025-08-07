@@ -11,6 +11,7 @@
     "build:prod": "vite build",
     "start": "vite preview",
     "test": "jest --coverage",
+    "test:unit": "npm test",
     "test:e2e": "cypress run",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
