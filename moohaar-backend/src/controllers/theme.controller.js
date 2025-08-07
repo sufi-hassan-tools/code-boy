@@ -6,7 +6,8 @@ import fs from 'fs/promises';
 
 import Theme from '../models/theme.model';
 import engine from '../services/liquid.service';
-import { auth, authorizeAdmin } from '../middleware/auth.middleware';
+import auth from '../middleware/auth';
+import authorizeAdmin from '../middleware/authorizeAdmin';
 import logger from '../utils/logger';
 import config from '../config/index';
 import { getCache, setCache } from '../services/cache.service';
