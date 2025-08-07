@@ -10,8 +10,12 @@ import {
   getSettings,
   updateSettings,
 } from '../controllers/admin.controller';
+import auth from '../middleware/auth';
+import authorizeAdmin from '../middleware/authorizeAdmin';
 
 const router = Router();
+
+router.use(auth, authorizeAdmin);
 
 router.get('/dashboard', getDashboard);
 
