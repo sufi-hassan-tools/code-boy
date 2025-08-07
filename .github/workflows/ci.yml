@@ -32,6 +32,9 @@ jobs:
         with:
           name: backend-coverage
           path: moohaar-backend/coverage
+      - name: Build server Docker image
+        working-directory: server
+        run: docker build -t server .
       - name: Install client deps
         working-directory: client
         run: npm ci
