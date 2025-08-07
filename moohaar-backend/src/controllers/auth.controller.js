@@ -1,4 +1,5 @@
 import jwt from 'jsonwebtoken';
+import crypto from 'crypto';
 import User from '../models/user.model';
 import config from '../config/index';
 import { hashPassword, comparePassword } from '../utils/password.util';
@@ -42,7 +43,68 @@ export const login = async (req, res, next) => {
       config.JWT_SECRET,
       { expiresIn: '1d' },
     );
+    const refreshToken = jwt.sign(
+      { userId: user.id, jti: crypto.randomUUID() },
+      config.JWT_SECRET,
+      { expiresIn: '7d' },
+    );
+    user.refreshTokenHash = await hashPassword(refreshToken);
+    await user.save();
     res.cookie('token', token, {
+      httpOnly: true,
+      sameSite: 'strict',
+      secure: process.env.NODE_ENV === 'production',
+    });
+    res.cookie('refreshToken', refreshToken, {
+      httpOnly: true,
+      sameSite: 'strict',
+      secure: process.env.NODE_ENV === 'production',
+    });
+    return res.json({ id: user.id, email: user.email, role: user.role });
+  } catch (err) {
+    return next(err);
+  }
+};
+
+// POST /api/auth/refresh
+export const refresh = async (req, res, next) => {
+  try {
+    const { refreshToken } = req.cookies || {};
+    if (!refreshToken) {
+      return res.status(401).json({ message: 'Refresh token required' });
+    }
+    let payload;
+    try {
+      payload = jwt.verify(refreshToken, config.JWT_SECRET);
+    } catch (err) {
+      return res.status(401).json({ message: 'Invalid token' });
+    }
+    const user = await User.findById(payload.userId);
+    if (!user || !user.refreshTokenHash) {
+      return res.status(401).json({ message: 'Invalid token' });
+    }
+    const match = await comparePassword(refreshToken, user.refreshTokenHash);
+    if (!match) {
+      return res.status(401).json({ message: 'Invalid token' });
+    }
+    const token = jwt.sign(
+      { userId: user.id, role: user.role },
+      config.JWT_SECRET,
+      { expiresIn: '1d' },
+    );
+    const newRefreshToken = jwt.sign(
+      { userId: user.id, jti: crypto.randomUUID() },
+      config.JWT_SECRET,
+      { expiresIn: '7d' },
+    );
+    user.refreshTokenHash = await hashPassword(newRefreshToken);
+    await user.save();
+    res.cookie('token', token, {
+      httpOnly: true,
+      sameSite: 'strict',
+      secure: process.env.NODE_ENV === 'production',
+    });
+    res.cookie('refreshToken', newRefreshToken, {
       httpOnly: true,
       sameSite: 'strict',
       secure: process.env.NODE_ENV === 'production',
@@ -54,13 +116,28 @@ export const login = async (req, res, next) => {
 };
 
 // POST /api/auth/logout
-export const logout = (req, res) => {
-  res.clearCookie('token', {
+export const logout = async (req, res) => {
+  const clearOptions = {
     httpOnly: true,
     sameSite: 'strict',
     secure: process.env.NODE_ENV === 'production',
-  });
+  };
+  const { refreshToken } = req.cookies || {};
+  if (refreshToken) {
+    try {
+      const { userId } = jwt.verify(refreshToken, config.JWT_SECRET);
+      const user = await User.findById(userId);
+      if (user) {
+        user.refreshTokenHash = undefined;
+        await user.save();
+      }
+    } catch (err) {
+      // ignore errors
+    }
+  }
+  res.clearCookie('token', clearOptions);
+  res.clearCookie('refreshToken', clearOptions);
   return res.status(204).send();
 };
 
-export default { register, login, logout };
+export default { register, login, logout, refresh };
