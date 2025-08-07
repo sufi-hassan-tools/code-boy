@@ -8,8 +8,11 @@ export const hashPassword = async (password) => {
     return new Promise((resolve, reject) => {
       const salt = crypto.randomBytes(16).toString('hex');
       crypto.scrypt(password, salt, 64, (scryptErr, derivedKey) => {
-        if (scryptErr) return reject(scryptErr);
-        return resolve(`${salt}:${derivedKey.toString('hex')}`);
+        if (scryptErr) {
+          reject(scryptErr);
+          return;
+        }
+        resolve(`${salt}:${derivedKey.toString('hex')}`);
       });
     });
   }
@@ -22,10 +25,16 @@ export const comparePassword = async (password, hash) => {
   } catch (err) {
     return new Promise((resolve, reject) => {
       const [salt, key] = hash.split(':');
-      if (!salt || !key) return resolve(false);
+      if (!salt || !key) {
+        resolve(false);
+        return;
+      }
       crypto.scrypt(password, salt, 64, (scryptErr, derivedKey) => {
-        if (scryptErr) return reject(scryptErr);
-        return resolve(key === derivedKey.toString('hex'));
+        if (scryptErr) {
+          reject(scryptErr);
+          return;
+        }
+        resolve(key === derivedKey.toString('hex'));
       });
     });
   }

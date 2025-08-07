@@ -9,7 +9,7 @@ export const auth = (req, res, next) => {
   if (!jwtToken) {
     const { authorization: header } = req.headers;
     if (header && header.startsWith('Bearer ')) {
-      jwtToken = header.split(' ')[1];
+      [, jwtToken] = header.split(' ');
     }
   }
   if (!jwtToken) {
