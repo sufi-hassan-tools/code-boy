@@ -1,12 +1,13 @@
 import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
+import bcrypt from 'bcrypt';
 import User from '../models/user.model';
 import config from '../config/index';
 import { hashPassword, comparePassword } from '../utils/password.util';
 
 // POST /api/auth/register
 export const register = async (req, res) => {
-  console.log('Register body:', req.body);
+  console.log('Register payload:', req.body);
   try {
     const { email, password } = req.body;
     if (!email || !password) {
@@ -16,13 +17,13 @@ export const register = async (req, res) => {
     if (existing) {
       return res.status(409).json({ message: 'email already exists' });
     }
-    const passwordHash = await hashPassword(password);
+    const passwordHash = await bcrypt.hash(password, 10);
     const userCount = await User.countDocuments();
-    const role = req.body.role === 'admin' && userCount === 0 ? 'admin' : 'merchant';
+    const role = userCount === 0 ? 'admin' : 'merchant';
     const user = await User.create({ email, passwordHash, role });
     return res.status(201).json({ id: user.id, email: user.email, role: user.role });
   } catch (err) {
-    console.error(err);
+    console.error('Register error:', err);
     return res.status(400).json({ error: err.message });
   }
 };
@@ -64,7 +65,7 @@ export const login = async (req, res, next) => {
       sameSite: 'strict',
       secure: process.env.NODE_ENV === 'production',
     });
-    return res.json({ id: user.id, email: user.email, role: user.role });
+    return res.status(200).json({ user: { id: user.id, role: user.role } });
   } catch (err) {
     return next(err);
   }

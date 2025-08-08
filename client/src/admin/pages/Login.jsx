@@ -17,10 +17,17 @@ export default function Login() {
     setError('');
     setLoading(true);
     try {
-      await login(form);
-      navigate('/admin/stores');
+      const res = await login(form);
+      const { user } = res.data || {};
+      if (user?.role === 'admin') {
+        navigate('/admin/stores');
+      } else {
+        setError('Unauthorized');
+      }
     } catch (err) {
-      setError(err.response?.data?.msg || 'Login failed');
+      setError(
+        err.response?.data?.error || err.response?.data?.message || 'Login failed',
+      );
     } finally {
       setLoading(false);
     }
@@ -29,7 +36,6 @@ export default function Login() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
       <form onSubmit={handleSubmit} className="w-full max-w-sm space-y-4">
-        {error && <div className="text-red-600 text-center">{error}</div>}
         <input
           type="email"
           name="email"
@@ -55,12 +61,13 @@ export default function Login() {
         >
           {loading ? 'Logging in...' : 'Login'}
         </button>
-        <div className="text-center">
-          <Link to="/admin/register" className="text-sm text-indigo-600 hover:underline">
-            Register as admin
-          </Link>
-        </div>
       </form>
+      {error && <div className="text-red-600 text-center mt-2">{error}</div>}
+      <div className="text-center mt-2">
+        <Link to="/admin/register" className="text-sm text-indigo-600 hover:underline">
+          Register as admin
+        </Link>
+      </div>
     </div>
   );
 }
