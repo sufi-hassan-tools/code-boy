@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
+import AdminLogin from './admin/pages/Login';
 // Lazily load heavy pages for route-based code splitting
 const Dashboard = React.lazy(() => import('./pages/Dashboard'));
 const AdminDashboard = React.lazy(() => import('./admin/pages/Dashboard'));
@@ -51,12 +52,15 @@ export default function App() {
           <Route path="/analytics" element={<PrivateRoute><Analytics /></PrivateRoute>} />
           <Route path="/create-store" element={<PrivateRoute><CreateStore /></PrivateRoute>} />
           <Route path="/themes" element={<ThemeStore />} />
-          <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
-          <Route path="/admin/stores" element={<AdminRoute><StoresList /></AdminRoute>} />
-          <Route path="/admin/stores/:storeId" element={<AdminRoute><StoreDetails /></AdminRoute>} />
-          <Route path="/admin/users" element={<AdminRoute><Users /></AdminRoute>} />
-          <Route path="/admin/themes" element={<AdminRoute><ThemeAdmin /></AdminRoute>} />
-          <Route path="/admin/settings" element={<AdminRoute><Settings /></AdminRoute>} />
+          <Route path="/admin/login" element={<AdminLogin />} />
+          <Route path="/admin" element={<AdminRoute />}> 
+            <Route index element={<AdminDashboard />} />
+            <Route path="stores" element={<StoresList />} />
+            <Route path="stores/:storeId" element={<StoreDetails />} />
+            <Route path="users" element={<Users />} />
+            <Route path="themes" element={<ThemeAdmin />} />
+            <Route path="settings" element={<Settings />} />
+          </Route>
           <Route path="/upload-theme" element={<PrivateRoute><ThemeUpload /></PrivateRoute>} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password/:token" element={<ResetPassword />} />
