@@ -4,6 +4,7 @@ import Home from './pages/Home';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import AdminLogin from './admin/pages/Login';
+import AdminRegister from './admin/pages/Register';
 // Lazily load heavy pages for route-based code splitting
 const Dashboard = React.lazy(() => import('./pages/Dashboard'));
 const AdminDashboard = React.lazy(() => import('./admin/pages/Dashboard'));
@@ -53,7 +54,8 @@ export default function App() {
           <Route path="/create-store" element={<PrivateRoute><CreateStore /></PrivateRoute>} />
           <Route path="/themes" element={<ThemeStore />} />
           <Route path="/admin/login" element={<AdminLogin />} />
-          <Route path="/admin" element={<AdminRoute />}> 
+          <Route path="/admin/register" element={<AdminRegister />} />
+          <Route path="/admin" element={<AdminRoute />}>
             <Route index element={<AdminDashboard />} />
             <Route path="stores" element={<StoresList />} />
             <Route path="stores/:storeId" element={<StoreDetails />} />
