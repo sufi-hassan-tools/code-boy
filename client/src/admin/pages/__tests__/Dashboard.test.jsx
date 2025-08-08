@@ -1,13 +1,19 @@
-import { render } from '@testing-library/react';
+import { render, act, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import Dashboard from '../Dashboard.jsx';
 
+jest.spyOn(console, 'warn').mockImplementation(() => {});
+
 describe('Dashboard Page', () => {
-  it('renders without crashing', () => {
-    render(
-      <MemoryRouter>
-        <Dashboard />
-      </MemoryRouter>
-    );
+  it('renders without crashing', async () => {
+    let result;
+    await act(async () => {
+      result = render(
+        <MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+          <Dashboard />
+        </MemoryRouter>
+      );
+    });
+    await waitFor(() => expect(result.container).toBeInTheDocument());
   });
 });
