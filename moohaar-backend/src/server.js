@@ -14,7 +14,7 @@ import Theme from './models/theme.model';
 import themeRoutes from './controllers/theme.controller';
 import storeRoutes from './routes/store.routes';
 import healthRoutes from './routes/health.routes';
-import authRoutes from './routes/auth.routes';
+import authRoutes, { register as registerRoute } from './routes/auth.routes';
 import adminRoutes from './routes/admin.routes';
 import PageView from './models/pageview.model';
 import auth from './middleware/auth';
@@ -226,6 +226,7 @@ app.use(async (req, res, next) => {
 });
 
 // API routes
+app.post('/api/auth/register', registerRoute);
 app.use('/api/auth', authRoutes);
 app.use('/api/admin', auth, authorizeAdmin, adminRoutes);
 app.use('/api/themes', themeRoutes);
