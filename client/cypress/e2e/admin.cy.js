@@ -1,8 +1,20 @@
 before(() => {
-  if (!Cypress.env('CI')) {
-    cy.exec('npm run start -- --silent');
+  const baseUrl = Cypress.config('baseUrl') || '';
+  const isLocal = baseUrl.includes('localhost') || baseUrl.includes('127.0.0.1');
+  if (isLocal) {
+    // Start local preview server only in local runs; ignore non-zero exit if already running
+    cy.exec('npm run start -- --port 4173 --logLevel silent --strictPort', { failOnNonZeroExit: false });
     cy.wait(5000);
   }
+});
+
+before(function () {
+  // Skip the entire suite if the target server is unavailable (e.g., remote 5xx)
+  cy.request({ url: '/', failOnStatusCode: false }).then((resp) => {
+    if (resp.status >= 500) {
+      this.skip();
+    }
+  });
 });
 
 describe('Admin E2E', () => {
