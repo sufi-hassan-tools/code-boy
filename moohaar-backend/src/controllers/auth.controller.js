@@ -7,7 +7,7 @@ import { hashPassword, comparePassword } from '../utils/password.util';
 // POST /api/auth/register
 export const register = async (req, res, next) => {
   try {
-    const { email, password, role } = req.body;
+    const { email, password } = req.body;
     if (!email || !password) {
       return res.status(400).json({ message: 'email and password are required' });
     }
@@ -16,7 +16,12 @@ export const register = async (req, res, next) => {
       return res.status(409).json({ message: 'email already exists' });
     }
     const passwordHash = await hashPassword(password);
-    const user = await User.create({ email, passwordHash, role });
+    const userCount = await User.countDocuments();
+    const user = await User.create({
+      email,
+      passwordHash,
+      role: userCount === 0 ? 'admin' : 'merchant',
+    });
     return res.status(201).json({ id: user.id, email: user.email, role: user.role });
   } catch (err) {
     return next(err);

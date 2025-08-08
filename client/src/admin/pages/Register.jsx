@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { login } from '../../services/auth.service';
+import axios from 'axios';
 
-export default function Login() {
+export default function Register() {
   const navigate = useNavigate();
   const [form, setForm] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
@@ -17,10 +17,10 @@ export default function Login() {
     setError('');
     setLoading(true);
     try {
-      await login(form);
-      navigate('/admin/stores');
+      await axios.post('/api/auth/register', form, { withCredentials: true });
+      navigate('/admin/login');
     } catch (err) {
-      setError(err.response?.data?.msg || 'Login failed');
+      setError(err.response?.data?.message || 'Registration failed');
     } finally {
       setLoading(false);
     }
@@ -53,11 +53,11 @@ export default function Login() {
           disabled={loading}
           className="w-full py-2 bg-indigo-600 text-white rounded disabled:opacity-50"
         >
-          {loading ? 'Logging in...' : 'Login'}
+          {loading ? 'Registering...' : 'Register'}
         </button>
         <div className="text-center">
-          <Link to="/admin/register" className="text-sm text-indigo-600 hover:underline">
-            Register as admin
+          <Link to="/admin/login" className="text-sm text-indigo-600 hover:underline">
+            Back to login
           </Link>
         </div>
       </form>

@@ -2,6 +2,10 @@
 
 This repository contains a React frontend (Vite) and an Express backend with MongoDB.
 
+## Admin Registration
+
+The first user to visit `/admin/register` will become the initial admin. All later registrations create merchant accounts.
+
 ## Available Scripts
 
 ### Client
