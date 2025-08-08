@@ -5,7 +5,8 @@ import config from '../config/index';
 import { hashPassword, comparePassword } from '../utils/password.util';
 
 // POST /api/auth/register
-export const register = async (req, res, next) => {
+export const register = async (req, res) => {
+  console.log('Register body:', req.body);
   try {
     const { email, password } = req.body;
     if (!email || !password) {
@@ -17,14 +18,12 @@ export const register = async (req, res, next) => {
     }
     const passwordHash = await hashPassword(password);
     const userCount = await User.countDocuments();
-    const user = await User.create({
-      email,
-      passwordHash,
-      role: userCount === 0 ? 'admin' : 'merchant',
-    });
+    const role = req.body.role === 'admin' && userCount === 0 ? 'admin' : 'merchant';
+    const user = await User.create({ email, passwordHash, role });
     return res.status(201).json({ id: user.id, email: user.email, role: user.role });
   } catch (err) {
-    return next(err);
+    console.error(err);
+    return res.status(400).json({ error: err.message });
   }
 };
 
