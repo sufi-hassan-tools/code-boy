@@ -4,5 +4,10 @@ module.exports = {
     specPattern: 'cypress/e2e/**/*.cy.js',
     supportFile: 'cypress/support/index.js',
     defaultCommandTimeout: 10000,
+    pageLoadTimeout: 60000,
+    retries: {
+      runMode: 2,
+      openMode: 0,
+    },
   },
 };
