@@ -1,4 +1,4 @@
-import { render } from '@testing-library/react';
+import { render, act, waitFor } from '@testing-library/react';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import StoreDetails from '../StoreDetails.jsx';
 import { getStoreMetrics } from '../../../services/api.js';
@@ -17,15 +17,23 @@ jest.mock('recharts', () => ({
   ResponsiveContainer: ({ children }) => <div>{children}</div>,
 }));
 
+jest.spyOn(console, 'warn').mockImplementation(() => {});
+
 describe('StoreDetails Page', () => {
-  it('renders without crashing', () => {
+  it('renders without crashing', async () => {
     getStoreMetrics.mockResolvedValue({ data: {} });
-    render(
-      <MemoryRouter initialEntries={['/admin/stores/1']}>
-        <Routes>
-          <Route path="/admin/stores/:storeId" element={<StoreDetails />} />
-        </Routes>
-      </MemoryRouter>
-    );
+    await act(async () => {
+      render(
+        <MemoryRouter
+          initialEntries={['/admin/stores/1']}
+          future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
+        >
+          <Routes>
+            <Route path="/admin/stores/:storeId" element={<StoreDetails />} />
+          </Routes>
+        </MemoryRouter>
+      );
+    });
+    await waitFor(() => expect(getStoreMetrics).toHaveBeenCalled());
   });
 });
