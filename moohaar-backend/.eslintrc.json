@@ -7,12 +7,32 @@
   },
   "overrides": [
     {
-      "files": ["**/__tests__/**/*.js"],
-      "env": { "jest": true }
+      "files": ["scripts/**/*.js"],
+      "rules": {
+        "no-console": "off",
+        "no-restricted-syntax": "off",
+        "no-await-in-loop": "off",
+        "no-continue": "off",
+        "import/no-extraneous-dependencies": "off"
+      }
+    },
+    {
+      "files": ["src/**/*.test.js"],
+      "env": { "jest": true },
+      "rules": {
+        "no-console": "off",
+        "no-restricted-syntax": "off",
+        "no-await-in-loop": "off",
+        "no-continue": "off",
+        "import/no-extraneous-dependencies": "off",
+        "lines-between-class-members": "off",
+        "import/no-named-as-default-member": "off",
+        "prefer-destructuring": "off"
+      }
     }
   ],
   "rules": {
-    "import/prefer-default-export": "error"
+    "import/prefer-default-export": "error",
+    "import/extensions": "off"
   }
 }
-

@@ -16,16 +16,18 @@ async function seedAdmins() {
 
   try {
     await mongoose.connect(MONGODB_URI);
-    for (const { email, password } of accounts) {
-      const existingUser = await User.findOne({ email });
-      if (existingUser) {
-        console.log(`Admin user already exists: ${email}`);
-        continue;
-      }
-      const passwordHash = await bcrypt.hash(password, 10);
-      await User.create({ email, passwordHash, role: 'admin' });
-      console.log(`Admin user created: ${email} / Password: ${password}`);
-    }
+    await Promise.all(
+      accounts.map(async ({ email, password }) => {
+        const existingUser = await User.findOne({ email });
+        if (existingUser) {
+          console.log(`Admin user already exists: ${email}`);
+          return;
+        }
+        const passwordHash = await bcrypt.hash(password, 10);
+        await User.create({ email, passwordHash, role: 'admin' });
+        console.log(`Admin user created: ${email} / Password: ${password}`);
+      })
+    );
   } catch (err) {
     console.error('Error seeding admin users:', err);
   } finally {
