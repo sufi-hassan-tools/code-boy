@@ -16,7 +16,7 @@ jobs:
           node-version: 20
       - name: Install backend deps
         working-directory: moohaar-backend
-        run: npm ci
+        run: npm ci --prefer-frozen-lockfile
       - name: Lint backend
         working-directory: moohaar-backend
         run: npm run lint
@@ -34,7 +34,7 @@ jobs:
           path: moohaar-backend/coverage
       - name: Install client deps
         working-directory: client
-        run: npm ci
+        run: npm ci --prefer-frozen-lockfile
       - name: Lint client
         working-directory: client
         run: npm run lint
