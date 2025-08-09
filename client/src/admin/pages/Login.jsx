@@ -20,7 +20,7 @@ export default function Login() {
       const res = await login(form);
       const { user } = res.data || {};
       if (user?.role === 'admin') {
-        navigate('/admin/stores');
+        navigate('/admin');
       } else {
         setError('Unauthorized');
       }

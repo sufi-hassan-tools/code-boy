@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { register as registerApi } from '../../services/auth.service';
 
 export default function Register() {
   const navigate = useNavigate();
@@ -17,10 +17,10 @@ export default function Register() {
     setError('');
     setLoading(true);
     try {
-      await axios.post('/api/auth/register', form, { withCredentials: true });
+      await registerApi(form);
       navigate('/admin/login');
     } catch (err) {
-      setError(err.response?.data?.message || 'Registration failed');
+      setError(err.response?.data?.message || err.response?.data?.error || 'Registration failed');
     } finally {
       setLoading(false);
     }
