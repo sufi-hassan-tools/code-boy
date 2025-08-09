@@ -71,6 +71,24 @@ export const login = async (req, res, next) => {
   }
 };
 
+// GET /api/auth/me
+export const me = async (req, res) => {
+  const { token } = req.cookies || {};
+  if (!token) {
+    return res.status(401).json({ message: 'Not authenticated' });
+  }
+  try {
+    const payload = jwt.verify(token, config.JWT_SECRET);
+    const user = await User.findById(payload.userId);
+    if (!user) {
+      return res.status(401).json({ message: 'Not authenticated' });
+    }
+    return res.status(200).json({ id: user.id, email: user.email, role: user.role });
+  } catch (err) {
+    return res.status(401).json({ message: 'Invalid token' });
+  }
+};
+
 // POST /api/auth/refresh
 export const refresh = async (req, res, next) => {
   try {
@@ -145,4 +163,4 @@ export const logout = async (req, res) => {
   return res.status(204).send();
 };
 
-export default { register, login, logout, refresh };
+export default { register, login, logout, refresh, me };
