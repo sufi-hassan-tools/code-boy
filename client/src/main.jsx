@@ -5,6 +5,12 @@ import App from './App';
 import './index.css';
 import ErrorBoundary from './components/ErrorBoundary';
 
+// Configure axios base URL from Vite env for CI/preview builds
+const apiBaseUrl = (import.meta.env && import.meta.env.VITE_API_URL) ? String(import.meta.env.VITE_API_URL).trim() : '';
+if (apiBaseUrl) {
+  axios.defaults.baseURL = apiBaseUrl;
+}
+
 axios.defaults.withCredentials = true;
 axios.defaults.xsrfCookieName = 'XSRF-TOKEN';
 axios.defaults.xsrfHeaderName = 'X-CSRF-Token';
