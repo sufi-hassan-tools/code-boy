@@ -41,10 +41,25 @@ jobs:
       - name: Client unit tests
         working-directory: client
         run: npm run test:unit
+      - name: Build frontend for E2E
+        working-directory: client
+        run: VITE_API_URL=https://moohaarapp.onrender.com npm run build:prod
+      - name: Start preview server
+        working-directory: client
+        run: nohup npm run start -- --port 4173 --strictPort --host 127.0.0.1 >/dev/null 2>&1 &
+      - name: Wait for preview to be ready
+        run: |
+          for i in {1..60}; do
+            if curl -sSf http://127.0.0.1:4173 > /dev/null; then
+              echo "Preview is up"
+              break
+            fi
+            sleep 2
+          done
       - name: Client E2E tests
         working-directory: client
         env:
-          RENDER_URL: https://moohaarapp.onrender.com
+          CYPRESS_BASE_URL: http://127.0.0.1:4173
         run: npm run test:e2e
       - name: Upload client coverage
         if: always()
