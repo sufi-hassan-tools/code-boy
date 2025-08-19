@@ -17,8 +17,9 @@ import healthRoutes from './routes/health.routes';
 import authRoutes, { register as registerRoute } from './routes/auth.routes';
 import adminRoutes from './routes/admin.routes';
 import PageView from './models/pageview.model';
-import auth from './middleware/auth';
 import authorizeAdmin from './middleware/authorizeAdmin';
+import adminAuthRoutes from './routes/adminAuth.routes';
+import adminAuth from './middleware/adminAuth';
 import errorHandler from './middleware/errorHandler';
 import logger from './utils/logger';
 import { initCache, getCache, setCache } from './services/cache.service';
@@ -228,7 +229,8 @@ app.use(async (req, res, next) => {
 // API routes
 app.post('/api/auth/register', registerRoute);
 app.use('/api/auth', authRoutes);
-app.use('/api/admin', auth, authorizeAdmin, adminRoutes);
+app.use('/api/admin/auth', adminAuthRoutes);
+app.use('/api/admin', adminAuth, authorizeAdmin, adminRoutes);
 app.use('/api/themes', themeRoutes);
 app.use('/api/store', storeRoutes);
 app.use('/health', healthRoutes);
