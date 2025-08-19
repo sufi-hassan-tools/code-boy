@@ -17,6 +17,7 @@ client/node_modules/
 # Test coverage
 coverage/
 moohaar-backend/coverage/
+moohaar-backend/admin-secret.txt
 client/coverage/
 
 # OS

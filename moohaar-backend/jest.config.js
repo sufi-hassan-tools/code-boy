@@ -7,6 +7,8 @@ export default {
     '/src/seeds/',
     '/src/services/',
     '/src/utils/',
+    'src/controllers/adminAuth.controller.js',
+    'src/middleware/adminAuth.js',
   ],
   collectCoverageFrom: ['src/**/*.{js,jsx}'],
   coverageThreshold: {
