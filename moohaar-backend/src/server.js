@@ -20,6 +20,7 @@ import PageView from './models/pageview.model';
 import authorizeAdmin from './middleware/authorizeAdmin';
 import adminAuthRoutes from './routes/adminAuth.routes';
 import adminAuth from './middleware/adminAuth';
+import superAdminAuthRoutes from './routes/superAdminAuth.routes';
 import errorHandler from './middleware/errorHandler';
 import logger from './utils/logger';
 import { initCache, getCache, setCache } from './services/cache.service';
@@ -230,6 +231,7 @@ app.use(async (req, res, next) => {
 app.post('/api/auth/register', registerRoute);
 app.use('/api/auth', authRoutes);
 app.use('/api/admin/auth', adminAuthRoutes);
+app.use('/api/superadmin', superAdminAuthRoutes);
 app.use('/api/admin', adminAuth, authorizeAdmin, adminRoutes);
 app.use('/api/themes', themeRoutes);
 app.use('/api/store', storeRoutes);

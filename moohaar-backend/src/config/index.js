@@ -15,6 +15,10 @@ const config = {
   APM_SERVICE_NAME: process.env.APM_SERVICE_NAME || 'moohaar-backend',
   APM_SERVER_URL: process.env.APM_SERVER_URL,
   APM_ACTIVE: process.env.APM_ACTIVE !== 'false',
+  // Email configuration
+  RESET_EMAIL: process.env.RESET_EMAIL,
+  RESET_PASS: process.env.RESET_PASS,
+  FRONTEND_URL: process.env.FRONTEND_URL || 'http://localhost:4173',
 };
 
 export default config;

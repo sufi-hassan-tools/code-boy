@@ -20,8 +20,14 @@ import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
 const ThemeStore = React.lazy(() => import('./pages/ThemeStore'));
 const ThemeUpload = React.lazy(() => import('./pages/ThemeUpload'));
+const SuperAdminRegister = React.lazy(() => import('./admin/pages/SuperAdminRegister'));
+const SuperAdminDashboard = React.lazy(() => import('./admin/pages/SuperAdminDashboard'));
+const AdminManagement = React.lazy(() => import('./admin/pages/AdminManagement'));
+const AdminLogin = React.lazy(() => import('./admin/pages/AdminLogin'));
+const AcceptInvitation = React.lazy(() => import('./admin/pages/AcceptInvitation'));
 import Loading from './components/Loading';
 import AdminRoute from './components/AdminRoute';
+import SuperAdminRoute from './components/SuperAdminRoute';
 import axios from 'axios';
 
 const PrivateRoute = ({ children }) => {
@@ -66,6 +72,15 @@ export default function App() {
           <Route path="/upload-theme" element={<PrivateRoute><ThemeUpload /></PrivateRoute>} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password/:token" element={<ResetPassword />} />
+          
+          {/* Super Admin Routes */}
+          <Route path="/sufimoohaaradmin" element={<SuperAdminRegister />} />
+          <Route path="/superadmin/dashboard" element={<SuperAdminRoute><SuperAdminDashboard /></SuperAdminRoute>} />
+          <Route path="/superadmin/admins" element={<SuperAdminRoute><AdminManagement /></SuperAdminRoute>} />
+          
+          {/* Admin Routes with Unique URLs */}
+          <Route path="/admin/:uniqueUrl" element={<AdminLogin />} />
+          <Route path="/admin/invitation/:token" element={<AcceptInvitation />} />
         </Routes>
       </React.Suspense>
     </Router>
