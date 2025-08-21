@@ -20,6 +20,10 @@ import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
 const ThemeStore = React.lazy(() => import('./pages/ThemeStore'));
 const ThemeUpload = React.lazy(() => import('./pages/ThemeUpload'));
+// Super Admin Components
+const OwnerAdminRegister = React.lazy(() => import('./superadmin/pages/OwnerAdminRegister'));
+const OwnerAdminLogin = React.lazy(() => import('./superadmin/pages/OwnerAdminLogin'));
+const OwnerAdminDashboard = React.lazy(() => import('./superadmin/pages/OwnerAdminDashboard'));
 import Loading from './components/Loading';
 import AdminRoute from './components/AdminRoute';
 import axios from 'axios';
@@ -66,6 +70,10 @@ export default function App() {
           <Route path="/upload-theme" element={<PrivateRoute><ThemeUpload /></PrivateRoute>} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password/:token" element={<ResetPassword />} />
+          {/* Super Admin Routes */}
+          <Route path="/sufimoohaaradmin" element={<OwnerAdminRegister />} />
+          <Route path="/sufimoohaaradmin/login" element={<OwnerAdminLogin />} />
+          <Route path="/owner-admin/dashboard" element={<OwnerAdminDashboard />} />
         </Routes>
       </React.Suspense>
     </Router>

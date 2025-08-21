@@ -15,6 +15,11 @@ const config = {
   APM_SERVICE_NAME: process.env.APM_SERVICE_NAME || 'moohaar-backend',
   APM_SERVER_URL: process.env.APM_SERVER_URL,
   APM_ACTIVE: process.env.APM_ACTIVE !== 'false',
+  // Email configuration for OTP and notifications
+  EMAIL_USER: process.env.EMAIL_USER,
+  EMAIL_PASS: process.env.EMAIL_PASS,
+  EMAIL_FROM: process.env.EMAIL_FROM || 'noreply@moohaar.com',
+  FRONTEND_URL: process.env.FRONTEND_URL || 'https://moohaar.com',
 };
 
 export default config;
