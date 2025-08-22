@@ -12,9 +12,9 @@ export const register = async (req, res) => {
     return res.status(404).json({ message: 'Not found' });
   }
   try {
-    const { email, password } = req.body;
-    if (!email || !password) {
-      return res.status(400).json({ message: 'email and password are required' });
+    const { name, email, password } = req.body;
+    if (!name || !email || !password) {
+      return res.status(400).json({ message: 'name, email and password are required' });
     }
     const existing = await Admin.findOne({ email });
     if (existing) {
@@ -25,8 +25,8 @@ export const register = async (req, res) => {
       return res.status(403).json({ message: 'Super admin limit reached' });
     }
     const passwordHash = await bcrypt.hash(password, 10);
-    const admin = await Admin.create({ email, passwordHash, role: 'superadmin' });
-    return res.status(201).json({ id: admin.id, email: admin.email, role: admin.role });
+    const admin = await Admin.create({ name, email, passwordHash, role: 'superadmin' });
+    return res.status(201).json({ id: admin.id, name: admin.name, email: admin.email, role: admin.role });
   } catch (err) {
     return res.status(400).json({ error: err.message });
   }

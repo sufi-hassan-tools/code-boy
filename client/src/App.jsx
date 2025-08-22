@@ -24,6 +24,8 @@ const ThemeUpload = React.lazy(() => import('./pages/ThemeUpload'));
 const OwnerAdminRegister = React.lazy(() => import('./superadmin/pages/OwnerAdminRegister'));
 const OwnerAdminLogin = React.lazy(() => import('./superadmin/pages/OwnerAdminLogin'));
 const OwnerAdminDashboard = React.lazy(() => import('./superadmin/pages/OwnerAdminDashboard'));
+const SuperAdminRegister = React.lazy(() => import('./superadmin/pages/SuperAdminRegister'));
+const AdminSecretRegister = React.lazy(() => import('./admin/pages/AdminSecretRegister'));
 import Loading from './components/Loading';
 import AdminRoute from './components/AdminRoute';
 import axios from 'axios';
@@ -59,6 +61,8 @@ export default function App() {
           <Route path="/themes" element={<ThemeStore />} />
           <Route path="/admin/login" element={<AdminLogin />} />
           <Route path="/admin/register" element={<AdminRegister />} />
+          {/* Unique URL for super admin registration with secret */}
+          <Route path="/admin/register/:secret" element={<AdminSecretRegister />} />
           <Route path="/admin" element={<AdminRoute />}>
             <Route index element={<AdminDashboard />} />
             <Route path="stores" element={<StoresList />} />
@@ -73,6 +77,7 @@ export default function App() {
           {/* Super Admin Routes */}
           <Route path="/sufimoohaaradmin" element={<OwnerAdminRegister />} />
           <Route path="/sufimoohaaradmin/login" element={<OwnerAdminLogin />} />
+          <Route path="/super-admin/register" element={<SuperAdminRegister />} />
           <Route path="/owner-admin/dashboard" element={<OwnerAdminDashboard />} />
         </Routes>
       </React.Suspense>
