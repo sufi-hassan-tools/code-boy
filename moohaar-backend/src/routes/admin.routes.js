@@ -9,7 +9,7 @@ import {
   disableTheme,
   getSettings,
   updateSettings,
-} from '../controllers/admin.controller';
+} from '../controllers/admin.controller.js';
 
 const router = Router();
 

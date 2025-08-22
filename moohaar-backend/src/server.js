@@ -6,26 +6,26 @@ import rateLimit from 'express-rate-limit';
 import { access, readFile } from 'fs/promises';
 import crypto from 'crypto';
 import cookie from 'cookie';
-import config from './config/index';
-import connectDB from './services/db.service';
-import engine from './services/liquid.service';
-import Store from './models/store.model';
-import Theme from './models/theme.model';
-import themeRoutes from './controllers/theme.controller';
-import storeRoutes from './routes/store.routes';
-import healthRoutes from './routes/health.routes';
-import authRoutes, { register as registerRoute } from './routes/auth.routes';
-import adminRoutes from './routes/admin.routes';
-import PageView from './models/pageview.model';
-import authorizeAdmin from './middleware/authorizeAdmin';
-import adminAuthRoutes from './routes/adminAuth.routes';
-import adminAuth from './middleware/adminAuth';
+import config from './config/index.js';
+import connectDB from './services/db.service.js';
+import engine from './services/liquid.service.js';
+import Store from './models/store.model.js';
+import Theme from './models/theme.model.js';
+import themeRoutes from './controllers/theme.controller.js';
+import storeRoutes from './routes/store.routes.js';
+import healthRoutes from './routes/health.routes.js';
+import authRoutes, { register as registerRoute } from './routes/auth.routes.js';
+import adminRoutes from './routes/admin.routes.js';
+import PageView from './models/pageview.model.js';
+import authorizeAdmin from './middleware/authorizeAdmin.js';
+import adminAuthRoutes from './routes/adminAuth.routes.js';
+import adminAuth from './middleware/adminAuth.js';
 import superAdminAuthRoutes from './routes/superAdminAuth.routes.js';
 import adminManagementRoutes from './routes/adminManagement.routes.js';
 import securityManagementRoutes from './routes/securityManagement.routes.js';
-import errorHandler from './middleware/errorHandler';
-import logger from './utils/logger';
-import { initCache, getCache, setCache } from './services/cache.service';
+import errorHandler from './middleware/errorHandler.js';
+import logger from './utils/logger.js';
+import { initCache, getCache, setCache } from './services/cache.service.js';
 
 export const app = express();
 
@@ -127,7 +127,14 @@ app.use((req, _res, next) => {
 
 // Restrictive CORS handling
 const moohaarOrigin = /^https:\/\/([a-z0-9-]+\.)*moohaar\.com$/i;
-const allowedOrigins = ['https://moohaarapp.onrender.com', 'https://app.onrender.com'];
+const allowedOrigins = [
+  'https://moohaarapp.onrender.com', 
+  'https://app.onrender.com',
+  'http://localhost:5173',
+  'http://localhost:3000',
+  'http://127.0.0.1:5173',
+  'http://127.0.0.1:3000'
+];
 app.use(async (req, res, next) => {
   const { origin } = req.headers;
   if (!origin) return next();
@@ -176,6 +183,12 @@ app.get('/api/csrf-token', (req, res) => {
 // CSRF protection for state-changing requests
 app.use((req, res, next) => {
   if (!['POST', 'PUT', 'DELETE'].includes(req.method)) return next();
+  
+  // Skip CSRF validation for super admin auth endpoints during development
+  if (req.path.startsWith('/api/super-admin/auth/')) {
+    return next();
+  }
+  
   const headerToken =
     req.headers['x-csrf-token'] ||
     req.headers['csrf-token'] ||

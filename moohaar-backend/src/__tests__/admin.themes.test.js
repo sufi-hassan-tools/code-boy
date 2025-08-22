@@ -1,4 +1,4 @@
-import { jest } from '@jest/globals';
+import { jest } from '@jest/globals.js';
 import adminController from '../controllers/admin.controller.js';
 
 describe('Admin Themes Controller', () => {

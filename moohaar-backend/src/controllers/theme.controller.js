@@ -4,20 +4,20 @@ import multer from 'multer';
 import path from 'path';
 import fs from 'fs/promises';
 
-import Theme from '../models/theme.model';
-import engine from '../services/liquid.service';
-import auth from '../middleware/auth';
-import authorizeAdmin from '../middleware/authorizeAdmin';
-import logger from '../utils/logger';
-import config from '../config/index';
-import { getCache, setCache } from '../services/cache.service';
+import Theme from '../models/theme.model.js';
+import engine from '../services/liquid.service.js';
+import auth from '../middleware/auth.js';
+import authorizeAdmin from '../middleware/authorizeAdmin.js';
+import logger from '../utils/logger.js';
+import config from '../config/index.js';
+import { getCache, setCache } from '../services/cache.service.js';
 
 // Utility for safe extraction and scanning of theme archives
 // eslint-disable-next-line import/named
 import {
   MaliciousContentError,
   unzipFile,
-} from '../utils/unzip.util';
+} from '../utils/unzip.util.js';
 
 // Multer configuration: store uploads in configured path with size and type checks
 const upload = multer({

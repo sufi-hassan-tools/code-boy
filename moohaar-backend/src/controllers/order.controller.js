@@ -1,4 +1,4 @@
-import Order from '../models/order.model';
+import Order from '../models/order.model.js';
 
 // Create order after successful payment
 export const createOrder = async (req, res, next) => {

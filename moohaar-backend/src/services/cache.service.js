@@ -1,17 +1,13 @@
-import config from '../config/index';
-import logger from '../utils/logger';
+import config from '../config/index.js';
+import logger from '../utils/logger.js';
 
 let client;
 
 export const initCache = async () => {
   try {
-    const { createClient } = await import('redis'); // eslint-disable-line import/no-unresolved
-    client = createClient({ url: config.REDIS_URL });
-    client.on('error', (err) => {
-      logger.error({ message: 'Redis error', error: err.message });
-    });
-    await client.connect();
-    logger.info({ message: 'Redis connected' });
+    // Temporarily disable Redis to test registration
+    logger.info({ message: 'Cache disabled for testing' });
+    client = null;
   } catch (err) {
     logger.warn({ message: 'Redis connection failed', error: err.message });
     client = null;

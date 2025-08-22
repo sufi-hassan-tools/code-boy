@@ -1,7 +1,7 @@
 import { Liquid } from 'liquidjs';
 import { JSDOM } from 'jsdom';
 import createDOMPurify from 'dompurify';
-import config from '../config/index';
+import config from '../config/index.js';
 
 // Configure LiquidJS with template caching for performance
 const engine = new Liquid({

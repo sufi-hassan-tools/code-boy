@@ -1,5 +1,5 @@
-import request from 'supertest';
-import app from '../server'; // eslint-disable-line import/no-named-as-default
+import request from 'supertest.js';
+import app from '../server.js'; // eslint-disable-line import/no-named-as-default
 
 describe('GET /metrics', () => {
   it('exposes Prometheus metrics', async () => {

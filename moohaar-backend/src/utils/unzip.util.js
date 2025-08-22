@@ -2,7 +2,7 @@
 import fs from 'fs';
 import path from 'path';
 import { Open } from 'unzipper';
-import logger from './logger';
+import logger from './logger.js';
 
 // Allowed file extensions for extraction
 const VALID_EXT = /\.(liquid|js|css|png|jpe?g|webp|svg)$/i;

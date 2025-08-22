@@ -1,10 +1,10 @@
 /* eslint-env jest */
 /* eslint-disable import/no-extraneous-dependencies */
-import request from 'supertest';
+import request from 'supertest.js';
 import fs from 'fs/promises';
 import path from 'path';
-import os from 'os';
-import { jest } from '@jest/globals';
+import os from 'os.js';
+import { jest } from '@jest/globals.js';
 
 // Mock Store model to avoid database dependency
 jest.unstable_mockModule('../models/store.model.js', () => ({

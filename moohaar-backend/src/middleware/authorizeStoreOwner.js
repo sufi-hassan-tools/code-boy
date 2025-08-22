@@ -1,4 +1,4 @@
-import Store from '../models/store.model';
+import Store from '../models/store.model.js';
 
 export default async (req, res, next) => {
   try {

@@ -1,7 +1,7 @@
 /* eslint-disable no-underscore-dangle */
 import { Router } from 'express';
-import Order from '../models/order.model';
-import PageView from '../models/pageview.model';
+import Order from '../models/order.model.js';
+import PageView from '../models/pageview.model.js';
 
 const router = Router();
 

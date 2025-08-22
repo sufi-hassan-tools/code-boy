@@ -1,9 +1,9 @@
 /* eslint-env jest */
 /* eslint-disable import/no-extraneous-dependencies */
-import request from 'supertest';
+import request from 'supertest.js';
 import express from 'express';
 import cookie from 'cookie';
-import { jest } from '@jest/globals';
+import { jest } from '@jest/globals.js';
 import { hashPassword } from '../../utils/password.util.js';
 
 let app;

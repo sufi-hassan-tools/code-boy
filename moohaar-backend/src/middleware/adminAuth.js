@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
-import config from '../config/index';
-import Admin from '../models/admin.model';
+import config from '../config/index.js';
+import Admin from '../models/admin.model.js';
 
 export default async (req, res, next) => {
   const { adminToken } = req.cookies || {};

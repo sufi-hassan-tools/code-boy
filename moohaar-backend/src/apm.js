@@ -1,4 +1,4 @@
-import config from './config/index';
+import config from './config/index.js';
 
 let apmInstance;
 if (config.APM_ACTIVE && config.APM_SERVER_URL) {
