@@ -1,4 +1,4 @@
-import logger from '../utils/logger';
+import logger from '../utils/logger.js';
 
 // Centralized error handling middleware
 // Logs the stack and sends consistent JSON responses

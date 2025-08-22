@@ -1,9 +1,9 @@
 import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
 import bcrypt from 'bcrypt';
-import User from '../models/user.model';
-import config from '../config/index';
-import { hashPassword, comparePassword } from '../utils/password.util';
+import User from '../models/user.model.js';
+import config from '../config/index.js';
+import { hashPassword, comparePassword } from '../utils/password.util.js';
 
 // POST /api/auth/register
 export const register = async (req, res) => {

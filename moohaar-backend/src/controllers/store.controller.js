@@ -1,4 +1,4 @@
-import Store from '../models/store.model';
+import Store from '../models/store.model.js';
 
 // POST /api/store/:storeId/theme
 // Sets a store's active theme reference

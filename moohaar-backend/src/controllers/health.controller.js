@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
-import { getCache, setCache } from '../services/cache.service';
-import config from '../config/index';
+import { getCache, setCache } from '../services/cache.service.js';
+import config from '../config/index.js';
 
 // GET /health
 // Provides basic service health information

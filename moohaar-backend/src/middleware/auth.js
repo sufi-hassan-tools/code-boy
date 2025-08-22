@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import config from '../config/index';
+import config from '../config/index.js';
 
 export default (req, res, next) => {
   const { token } = req.cookies || {};

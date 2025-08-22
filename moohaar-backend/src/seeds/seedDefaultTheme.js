@@ -1,7 +1,7 @@
 import fs from 'fs/promises';
 import path from 'path';
 import unzipper from 'unzipper';
-import Theme from '../models/theme.model';
+import Theme from '../models/theme.model.js';
 
 /**
  * Seeds the default Moohaar theme if it does not exist.
