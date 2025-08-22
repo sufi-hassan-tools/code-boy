@@ -7,7 +7,7 @@ import { hashPassword, comparePassword } from '../utils/password.util.js';
 
 // POST /api/auth/register
 export const register = async (req, res) => {
-  console.log('Register payload:', req.body);
+  // Removed console.log for production
   try {
     const { email, password } = req.body;
     if (!email || !password) {
@@ -23,7 +23,7 @@ export const register = async (req, res) => {
     const user = await User.create({ email, passwordHash, role });
     return res.status(201).json({ id: user.id, email: user.email, role: user.role });
   } catch (err) {
-    console.error('Register error:', err);
+    // Removed console.error for production
     return res.status(400).json({ error: err.message });
   }
 };

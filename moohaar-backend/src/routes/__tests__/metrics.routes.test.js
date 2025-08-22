@@ -3,103 +3,20 @@
 import request from 'supertest';
 import express from 'express';
 import { jest } from '@jest/globals';
+import MockOrder from './mocks/order.mock.js';
+import MockPageView from './mocks/pageview.mock.js';
 
 let app;
-let Order;
-let PageView;
 
 beforeAll(async () => {
   const orders = [];
   const pageViews = [];
 
-  class MockOrder {
-    static async aggregate(pipeline) {
-      // Mock aggregation for sales metrics
-      const match = pipeline.find(p => p.$match);
-      const group = pipeline.find(p => p.$group);
-      
-      if (match && group) {
-        // Filter orders based on match criteria
-        let filtered = orders.filter(order => {
-          if (match.$match.storeId && order.storeId !== match.$match.storeId) return false;
-          if (match.$match.createdAt) {
-            if (match.$match.createdAt.$gte && new Date(order.createdAt) < match.$match.createdAt.$gte) return false;
-            if (match.$match.createdAt.$lte && new Date(order.createdAt) > match.$match.createdAt.$lte) return false;
-          }
-          return true;
-        });
-
-        // Group by date
-        const grouped = {};
-        filtered.forEach(order => {
-          const date = new Date(order.createdAt).toISOString().split('T')[0];
-          if (!grouped[date]) {
-            grouped[date] = { _id: date, total: 0 };
-          }
-          grouped[date].total += order.amount;
-        });
-
-        return Object.values(grouped).sort((a, b) => a._id.localeCompare(b._id));
-      }
-      
-      return [];
-    }
-  }
-
-  class MockPageView {
-    static async aggregate(pipeline) {
-      // Mock aggregation for traffic metrics
-      const match = pipeline.find(p => p.$match);
-      const group = pipeline.find(p => p.$group);
-      const project = pipeline.find(p => p.$project);
-      
-      if (match && group) {
-        // Filter page views based on match criteria
-        let filtered = pageViews.filter(view => {
-          if (match.$match.storeId && view.storeId !== match.$match.storeId) return false;
-          if (match.$match.timestamp) {
-            if (match.$match.timestamp.$gte && new Date(view.timestamp) < match.$match.timestamp.$gte) return false;
-            if (match.$match.timestamp.$lte && new Date(view.timestamp) > match.$match.timestamp.$lte) return false;
-          }
-          return true;
-        });
-
-        // Group by date
-        const grouped = {};
-        filtered.forEach(view => {
-          const date = new Date(view.timestamp).toISOString().split('T')[0];
-          if (!grouped[date]) {
-            grouped[date] = { 
-              _id: date, 
-              views: 0, 
-              bounces: 0 
-            };
-          }
-          grouped[date].views += 1;
-          if (view.isBounce) {
-            grouped[date].bounces += 1;
-          }
-        });
-
-        // Apply projection
-        return Object.values(grouped).map(item => ({
-          date: item._id,
-          views: item.views,
-          bounces: item.bounces,
-          bounceRate: item.views > 0 ? item.bounces / item.views : 0
-        })).sort((a, b) => a.date.localeCompare(b.date));
-      }
-      
-      return [];
-    }
-  }
-
   jest.unstable_mockModule('../../models/order.model.js', () => ({ default: MockOrder }));
   jest.unstable_mockModule('../../models/pageview.model.js', () => ({ default: MockPageView }));
   
   const { default: metricsRoutes } = await import('../metrics.routes.js');
-  ({ default: Order } = await import('../../models/order.model.js'));
-  ({ default: PageView } = await import('../../models/pageview.model.js'));
+  // Removed unused imports: Order, PageView
 
   app = express();
   app.use(express.json());
@@ -119,6 +36,10 @@ beforeAll(async () => {
     { storeId: 'store1', timestamp: '2024-01-02T10:00:00Z', isBounce: false },
     { storeId: 'store2', timestamp: '2024-01-01T10:00:00Z', isBounce: false }
   );
+
+  // Set the test data in the mock classes
+  MockOrder.setOrders(orders);
+  MockPageView.setPageViews(pageViews);
 });
 
 describe('GET /api/stores/:storeId/metrics/sales', () => {

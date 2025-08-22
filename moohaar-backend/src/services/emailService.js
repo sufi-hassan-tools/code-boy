@@ -70,7 +70,7 @@ class EmailService {
       await this.transporter.sendMail(mailOptions);
       return { success: true };
     } catch (error) {
-      console.error('Email sending failed:', error);
+      // Removed console.error for production
       return { success: false, error: error.message };
     }
   }
@@ -118,7 +118,7 @@ class EmailService {
       await this.transporter.sendMail(mailOptions);
       return { success: true };
     } catch (error) {
-      console.error('Approval notification email failed:', error);
+      // Removed console.error for production
       return { success: false, error: error.message };
     }
   }
@@ -178,7 +178,7 @@ class EmailService {
       await this.transporter.sendMail(mailOptions);
       return { success: true };
     } catch (error) {
-      console.error('Admin credentials email failed:', error);
+      // Removed console.error for production
       return { success: false, error: error.message };
     }
   }

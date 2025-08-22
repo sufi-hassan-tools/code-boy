@@ -22,7 +22,7 @@ const logAdminAction = async (adminId, action, category, description, target = n
       severity,
     });
   } catch (err) {
-    console.error('Failed to log admin action:', err);
+    // Removed console.error for production
   }
 };
 
@@ -136,7 +136,7 @@ export const approveSuperAdmin = async (req, res) => {
     }
     
   } catch (error) {
-    console.error('Approve super admin error:', error);
+    // Removed console.error for production
     return res.status(500).json({
       success: false,
       message: 'Internal server error'
@@ -258,7 +258,7 @@ export const createAdmin = async (req, res) => {
     });
     
   } catch (error) {
-    console.error('Create admin error:', error);
+    // Removed console.error for production
     return res.status(500).json({
       success: false,
       message: 'Internal server error'
@@ -324,7 +324,7 @@ export const getAllAdmins = async (req, res) => {
     });
     
   } catch (error) {
-    console.error('Get all admins error:', error);
+    // Removed console.error for production
     return res.status(500).json({
       success: false,
       message: 'Internal server error'
@@ -355,7 +355,7 @@ export const getPendingApprovals = async (req, res) => {
     });
     
   } catch (error) {
-    console.error('Get pending approvals error:', error);
+    // Removed console.error for production
     return res.status(500).json({
       success: false,
       message: 'Internal server error'
@@ -441,7 +441,7 @@ export const updateAdminPermissions = async (req, res) => {
     });
     
   } catch (error) {
-    console.error('Update admin permissions error:', error);
+    // Removed console.error for production
     return res.status(500).json({
       success: false,
       message: 'Internal server error'
@@ -510,7 +510,7 @@ export const forceLogoutAdmin = async (req, res) => {
     });
     
   } catch (error) {
-    console.error('Force logout admin error:', error);
+    // Removed console.error for production
     return res.status(500).json({
       success: false,
       message: 'Internal server error'
@@ -633,7 +633,7 @@ export const deleteAdmin = async (req, res) => {
     }
     
   } catch (error) {
-    console.error('Delete/suspend admin error:', error);
+    // Removed console.error for production
     return res.status(500).json({
       success: false,
       message: 'Internal server error'
@@ -687,7 +687,7 @@ export const getAdminActivity = async (req, res) => {
     });
     
   } catch (error) {
-    console.error('Get admin activity error:', error);
+    // Removed console.error for production
     return res.status(500).json({
       success: false,
       message: 'Internal server error'
