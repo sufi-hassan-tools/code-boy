@@ -25,7 +25,7 @@ const logAdminAction = async (adminId, action, category, description, target = n
       severity,
     });
   } catch (err) {
-    console.error('Failed to log admin action:', err);
+    // Removed console.error for production
   }
 };
 
@@ -177,11 +177,11 @@ export const registerOwnerAdmin = async (req, res) => {
       }
     });
     
-  } catch (error) {
-    console.error('Owner admin registration error:', error);
-    return res.status(500).json({ 
-      success: false, 
-      message: 'Internal server error' 
+    } catch (error) {
+    // Removed console.error for production
+    return res.status(500).json({
+      success: false,
+      message: 'Internal server error'
     });
   }
 };
@@ -285,11 +285,11 @@ export const registerSuperAdmin = async (req, res) => {
       }
     });
     
-  } catch (error) {
-    console.error('Super admin registration error:', error);
-    return res.status(500).json({ 
-      success: false, 
-      message: 'Internal server error' 
+    } catch (error) {
+    // Removed console.error for production
+    return res.status(500).json({
+      success: false,
+      message: 'Internal server error'
     });
   }
 };
@@ -506,11 +506,11 @@ export const login = async (req, res) => {
       sessionTimeout: admin.sessionTimeout,
     });
     
-  } catch (error) {
-    console.error('Admin login error:', error);
-    return res.status(500).json({ 
-      success: false, 
-      message: 'Internal server error' 
+    } catch (error) {
+    // Removed console.error for production
+    return res.status(500).json({
+      success: false,
+      message: 'Internal server error'
     });
   }
 };
@@ -545,11 +545,11 @@ export const getCurrentAdmin = async (req, res) => {
       }
     });
     
-  } catch (error) {
-    console.error('Get current admin error:', error);
-    return res.status(500).json({ 
-      success: false, 
-      message: 'Internal server error' 
+    } catch (error) {
+    // Removed console.error for production
+    return res.status(500).json({
+      success: false,
+      message: 'Internal server error'
     });
   }
 };
@@ -598,11 +598,11 @@ export const logout = async (req, res) => {
       message: 'Logged out successfully'
     });
     
-  } catch (error) {
-    console.error('Admin logout error:', error);
-    return res.status(500).json({ 
-      success: false, 
-      message: 'Internal server error' 
+    } catch (error) {
+    // Removed console.error for production
+    return res.status(500).json({
+      success: false,
+      message: 'Internal server error'
     });
   }
 };

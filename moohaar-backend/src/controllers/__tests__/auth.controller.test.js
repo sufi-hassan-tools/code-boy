@@ -6,7 +6,7 @@ import cookie from 'cookie';
 import { jest } from '@jest/globals';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import { hashPassword, comparePassword } from '../../utils/password.util.js';
+// Removed unused imports: hashPassword, comparePassword
 
 let app;
 let User;

@@ -20,7 +20,7 @@ const logAdminAction = async (adminId, action, category, description, target = n
       severity,
     });
   } catch (err) {
-    console.error('Failed to log admin action:', err);
+    // Removed console.error for production
   }
 };
 
@@ -70,7 +70,7 @@ export const getBlockedIPs = async (req, res) => {
     });
     
   } catch (error) {
-    console.error('Get blocked IPs error:', error);
+    // Removed console.error for production
     return res.status(500).json({
       success: false,
       message: 'Internal server error'
@@ -201,7 +201,7 @@ export const blockIP = async (req, res) => {
     });
     
   } catch (error) {
-    console.error('Block IP error:', error);
+    // Removed console.error for production
     return res.status(500).json({
       success: false,
       message: 'Internal server error'
@@ -273,7 +273,7 @@ export const unblockIP = async (req, res) => {
     });
     
   } catch (error) {
-    console.error('Unblock IP error:', error);
+    // Removed console.error for production
     return res.status(500).json({
       success: false,
       message: 'Internal server error'
@@ -365,7 +365,7 @@ export const getAuditLogs = async (req, res) => {
     });
     
   } catch (error) {
-    console.error('Get audit logs error:', error);
+    // Removed console.error for production
     return res.status(500).json({
       success: false,
       message: 'Internal server error'
@@ -468,7 +468,7 @@ export const getSystemStats = async (req, res) => {
     });
     
   } catch (error) {
-    console.error('Get system stats error:', error);
+    // Removed console.error for production
     return res.status(500).json({
       success: false,
       message: 'Internal server error'
@@ -521,7 +521,7 @@ export const getRealTimeActivity = async (req, res) => {
     });
     
   } catch (error) {
-    console.error('Get real-time activity error:', error);
+    // Removed console.error for production
     return res.status(500).json({
       success: false,
       message: 'Internal server error'

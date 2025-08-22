@@ -88,7 +88,7 @@ export const authenticateAdmin = async (req, res, next) => {
     next();
     
   } catch (error) {
-    console.error('Admin authentication error:', error);
+    // Removed console.error for production
     return res.status(500).json({
       success: false,
       message: 'Authentication error'
@@ -185,7 +185,7 @@ export const rateLimitLogin = async (req, res, next) => {
     next();
     
   } catch (error) {
-    console.error('Rate limit check error:', error);
+    // Removed console.error for production
     next(); // Continue on error to not block legitimate requests
   }
 };
@@ -230,7 +230,7 @@ export const checkSessionTimeout = async (req, res, next) => {
     next();
     
   } catch (error) {
-    console.error('Session timeout check error:', error);
+    // Removed console.error for production
     next(); // Continue on error
   }
 };
