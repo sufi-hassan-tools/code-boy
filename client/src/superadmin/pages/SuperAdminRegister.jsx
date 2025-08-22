@@ -2,10 +2,10 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
-export default function OwnerAdminRegister() {
+export default function SuperAdminRegister() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    name: 'SUFI Hassan ms',
+    name: '',
     email: '',
     password: '',
     confirmPassword: ''
@@ -27,8 +27,8 @@ export default function OwnerAdminRegister() {
     setSuccess('');
 
     // Validate form
-    if (!formData.email || !formData.password) {
-      setError('Email and password are required');
+    if (!formData.name || !formData.email || !formData.password) {
+      setError('All fields are required');
       return;
     }
 
@@ -42,25 +42,23 @@ export default function OwnerAdminRegister() {
       return;
     }
 
-    if (formData.name !== 'SUFI Hassan ms') {
-      setError('Invalid name. Only SUFI Hassan ms can register as owner admin.');
-      return;
-    }
-
     setLoading(true);
 
     try {
-      const response = await axios.post('/api/super-admin/auth/owner-admin/register', {
+      const response = await axios.post('/api/super-admin/auth/super-admin/register', {
         name: formData.name,
         email: formData.email,
         password: formData.password
       });
 
       if (response.data.success) {
-        setSuccess('Owner admin registered successfully! You can now login.');
-        setTimeout(() => {
-          navigate('/sufimoohaaradmin/login');
-        }, 2000);
+        setSuccess('Super admin registration submitted successfully! You will receive an email once approved by the owner admin.');
+        setFormData({
+          name: '',
+          email: '',
+          password: '',
+          confirmPassword: ''
+        });
       }
     } catch (err) {
       const message = err.response?.data?.message || 'Registration failed';
@@ -75,13 +73,13 @@ export default function OwnerAdminRegister() {
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <div className="text-center">
           <h1 className="text-4xl font-bold text-primary mb-2">🟦 Moohaar</h1>
-          <p className="text-lg text-gray-600 mb-4">Owner Admin Registration</p>
+          <p className="text-lg text-gray-600 mb-4">Super Admin Registration</p>
         </div>
         <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-          Register as Platform Owner
+          Apply for Super Admin Access
         </h2>
         <p className="mt-2 text-center text-sm text-gray-600">
-          Only SUFI Hassan ms can register as owner admin
+          Your application will be reviewed by the owner admin
         </p>
       </div>
 
@@ -109,14 +107,14 @@ export default function OwnerAdminRegister() {
                   id="name"
                   name="name"
                   type="text"
+                  autoComplete="name"
                   value={formData.name}
                   onChange={handleChange}
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm bg-gray-100"
-                  disabled
+                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
+                  placeholder="Enter your full name"
                   required
                 />
               </div>
-              <p className="mt-1 text-xs text-gray-500">Only SUFI Hassan ms can register as owner admin</p>
             </div>
 
             <div>
@@ -186,17 +184,17 @@ export default function OwnerAdminRegister() {
                 {loading ? (
                   <div className="flex items-center">
                     <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                    Registering...
+                    Submitting...
                   </div>
                 ) : (
-                  'Register as Owner Admin'
+                  'Apply for Super Admin'
                 )}
               </button>
             </div>
 
             <div className="text-center">
               <p className="text-sm text-gray-600">
-                Already registered?{' '}
+                Already have access?{' '}
                 <button
                   type="button"
                   onClick={() => navigate('/sufimoohaaradmin/login')}
@@ -208,20 +206,20 @@ export default function OwnerAdminRegister() {
             </div>
           </form>
 
-          {/* Security Notice */}
-          <div className="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+          {/* Information Notice */}
+          <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
             <div className="flex items-start">
               <div className="flex-shrink-0">
-                <span className="text-yellow-600">⚠️</span>
+                <span className="text-blue-600">ℹ️</span>
               </div>
               <div className="ml-3">
-                <h3 className="text-sm font-medium text-yellow-800">Security Notice</h3>
-                <div className="mt-2 text-sm text-yellow-700">
+                <h3 className="text-sm font-medium text-blue-800">Application Process</h3>
+                <div className="mt-2 text-sm text-blue-700">
                   <ul className="list-disc list-inside space-y-1">
-                    <li>Only SUFI Hassan ms can register as owner admin</li>
-                    <li>This is a one-time registration process</li>
-                    <li>Keep your credentials secure and private</li>
-                    <li>Two-factor authentication will be enabled</li>
+                    <li>Your application will be reviewed by the owner admin</li>
+                    <li>You will receive an email notification once approved</li>
+                    <li>Maximum 5 super admins allowed on the platform</li>
+                    <li>Two-factor authentication will be enabled upon approval</li>
                   </ul>
                 </div>
               </div>

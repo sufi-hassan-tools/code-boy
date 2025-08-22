@@ -121,196 +121,211 @@ export default function OwnerAdminLogin() {
   }, [formData.otp]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary via-blue-600 to-blue-800 flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-8">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-primary rounded-full mb-4">
-            <span className="text-2xl text-white font-bold">🟦</span>
-          </div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">Moohaar Owner Admin</h1>
-          <p className="text-gray-600">
-            {step === 'credentials' ? 'Sign in to your account' : 'Enter verification code'}
-          </p>
+    <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+      <div className="sm:mx-auto sm:w-full sm:max-w-md">
+        <div className="text-center">
+          <h1 className="text-4xl font-bold text-primary mb-2">🟦 Moohaar</h1>
+          <p className="text-lg text-gray-600 mb-4">Owner Admin Login</p>
         </div>
+        <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+          {step === 'credentials' ? 'Sign in to your account' : 'Enter verification code'}
+        </h2>
+        <p className="mt-2 text-center text-sm text-gray-600">
+          {step === 'credentials' ? 'Access your owner admin dashboard' : 'Check your email for the 8-character code'}
+        </p>
+      </div>
 
-        {/* Progress indicator */}
-        <div className="flex items-center justify-center mb-6">
-          <div className="flex items-center">
-            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
-              step === 'credentials' ? 'bg-primary text-white' : 'bg-green-500 text-white'
-            }`}>
-              {step === 'credentials' ? '1' : '✓'}
-            </div>
-            <div className={`w-16 h-1 ${step === 'otp' ? 'bg-primary' : 'bg-gray-200'}`}></div>
-            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
-              step === 'otp' ? 'bg-primary text-white' : 'bg-gray-200 text-gray-400'
-            }`}>
-              2
-            </div>
-          </div>
-        </div>
-
-        {error && (
-          <div className="mb-6 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
-            {error}
-          </div>
-        )}
-
-        {/* Credentials Step */}
-        {step === 'credentials' && (
-          <form onSubmit={handleCredentialsSubmit} className="space-y-6">
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                Email Address
-              </label>
-              <input
-                type="email"
-                id="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
-                placeholder="Enter your email"
-                required
-              />
-            </div>
-
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
-                Password
-              </label>
-              <input
-                type="password"
-                id="password"
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
-                placeholder="Enter your password"
-                required
-              />
-            </div>
-
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-primary text-white py-3 px-4 rounded-lg font-semibold hover:bg-blue-700 focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-            >
-              {loading ? (
-                <div className="flex items-center justify-center">
-                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
-                  Signing in...
-                </div>
-              ) : (
-                'Continue'
-              )}
-            </button>
-          </form>
-        )}
-
-        {/* OTP Step */}
-        {step === 'otp' && (
-          <div className="space-y-6">
-            <div className="text-center">
-              <div className="inline-flex items-center justify-center w-12 h-12 bg-green-100 rounded-full mb-4">
-                <span className="text-green-600">📧</span>
+      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+        <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+          {/* Progress indicator */}
+          <div className="flex items-center justify-center mb-6">
+            <div className="flex items-center">
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
+                step === 'credentials' ? 'bg-primary text-white' : 'bg-green-500 text-white'
+              }`}>
+                {step === 'credentials' ? '1' : '✓'}
               </div>
-              <p className="text-sm text-gray-600 mb-4">
-                We've sent an 8-character verification code to<br />
-                <strong>{formData.email}</strong>
-              </p>
+              <div className={`w-16 h-1 ${step === 'otp' ? 'bg-primary' : 'bg-gray-200'}`}></div>
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
+                step === 'otp' ? 'bg-primary text-white' : 'bg-gray-200 text-gray-400'
+              }`}>
+                2
+              </div>
             </div>
+          </div>
 
-            <form onSubmit={handleOtpSubmit}>
+          {error && (
+            <div className="mb-6 bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded">
+              {error}
+            </div>
+          )}
+
+          {/* Credentials Step */}
+          {step === 'credentials' && (
+            <form className="space-y-6" onSubmit={handleCredentialsSubmit}>
               <div>
-                <label htmlFor="otp" className="block text-sm font-medium text-gray-700 mb-2">
-                  Verification Code
+                <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+                  Email Address
                 </label>
-                <input
-                  type="text"
-                  id="otp"
-                  name="otp"
-                  value={formData.otp}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary text-center text-lg font-mono tracking-widest uppercase"
-                  placeholder="Enter 8-digit code"
-                  maxLength={8}
-                  required
-                  autoFocus
-                />
-                <p className="text-xs text-gray-500 mt-1 text-center">
-                  Code expires in 10 minutes
+                <div className="mt-1">
+                  <input
+                    id="email"
+                    name="email"
+                    type="email"
+                    autoComplete="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
+                    placeholder="Enter your email address"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+                  Password
+                </label>
+                <div className="mt-1">
+                  <input
+                    id="password"
+                    name="password"
+                    type="password"
+                    autoComplete="current-password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
+                    placeholder="Enter your password"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div>
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-primary hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {loading ? (
+                    <div className="flex items-center">
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                      Signing in...
+                    </div>
+                  ) : (
+                    'Continue'
+                  )}
+                </button>
+              </div>
+            </form>
+          )}
+
+          {/* OTP Step */}
+          {step === 'otp' && (
+            <div className="space-y-6">
+              <div className="text-center">
+                <div className="inline-flex items-center justify-center w-12 h-12 bg-green-100 rounded-full mb-4">
+                  <span className="text-green-600">📧</span>
+                </div>
+                <p className="text-sm text-gray-600 mb-4">
+                  We've sent an 8-character verification code to<br />
+                  <strong>{formData.email}</strong>
                 </p>
               </div>
 
-              <button
-                type="submit"
-                disabled={loading || formData.otp.length !== 8}
-                className="w-full mt-4 bg-primary text-white py-3 px-4 rounded-lg font-semibold hover:bg-blue-700 focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-              >
-                {loading ? (
-                  <div className="flex items-center justify-center">
-                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
-                    Verifying...
+              <form onSubmit={handleOtpSubmit}>
+                <div>
+                  <label htmlFor="otp" className="block text-sm font-medium text-gray-700">
+                    Verification Code
+                  </label>
+                  <div className="mt-1">
+                    <input
+                      id="otp"
+                      name="otp"
+                      type="text"
+                      value={formData.otp}
+                      onChange={handleChange}
+                      className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm text-center text-lg font-mono tracking-widest uppercase"
+                      placeholder="Enter 8-digit code"
+                      maxLength={8}
+                      required
+                      autoFocus
+                    />
                   </div>
-                ) : (
-                  'Verify & Sign In'
-                )}
-              </button>
-            </form>
+                  <p className="mt-1 text-xs text-gray-500 text-center">
+                    Code expires in 10 minutes
+                  </p>
+                </div>
 
-            <div className="text-center">
-              <button
-                onClick={resendOTP}
-                disabled={loading}
-                className="text-sm text-primary hover:text-blue-700 font-medium"
-              >
-                Didn't receive the code? Resend
-              </button>
+                <div className="mt-4">
+                  <button
+                    type="submit"
+                    disabled={loading || formData.otp.length !== 8}
+                    className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-primary hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {loading ? (
+                      <div className="flex items-center">
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                        Verifying...
+                      </div>
+                    ) : (
+                      'Verify & Sign In'
+                    )}
+                  </button>
+                </div>
+              </form>
+
+              <div className="text-center space-y-2">
+                <button
+                  onClick={resendOTP}
+                  disabled={loading}
+                  className="text-sm text-primary hover:text-blue-700 font-medium"
+                >
+                  Didn't receive the code? Resend
+                </button>
+                <br />
+                <button
+                  onClick={() => {
+                    setStep('credentials');
+                    setFormData({ ...formData, otp: '' });
+                    setError('');
+                  }}
+                  className="text-sm text-gray-500 hover:text-gray-700"
+                >
+                  ← Back to login
+                </button>
+              </div>
             </div>
+          )}
 
-            <div className="text-center">
-              <button
-                onClick={() => {
-                  setStep('credentials');
-                  setFormData({ ...formData, otp: '' });
-                  setError('');
-                }}
-                className="text-sm text-gray-500 hover:text-gray-700"
-              >
-                ← Back to login
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* Footer */}
-        {step === 'credentials' && (
-          <div className="mt-6 text-center">
-            <p className="text-sm text-gray-600">
-              Need to register?{' '}
-              <button
-                onClick={() => navigate('/sufimoohaaradmin')}
-                className="font-medium text-primary hover:text-blue-700"
-              >
-                Register here
-              </button>
-            </p>
-          </div>
-        )}
-
-        {/* Security Notice */}
-        <div className="mt-8 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-          <div className="flex items-start">
-            <div className="flex-shrink-0">
-              <span className="text-blue-600">🔐</span>
-            </div>
-            <div className="ml-3">
-              <h3 className="text-sm font-medium text-blue-800">Security Active</h3>
-              <p className="mt-1 text-sm text-blue-700">
-                Two-factor authentication is required for all admin access.
+          {/* Footer */}
+          {step === 'credentials' && (
+            <div className="mt-6 text-center">
+              <p className="text-sm text-gray-600">
+                Need to register?{' '}
+                <button
+                  type="button"
+                  onClick={() => navigate('/sufimoohaaradmin')}
+                  className="font-medium text-primary hover:text-blue-700"
+                >
+                  Register here
+                </button>
               </p>
+            </div>
+          )}
+
+          {/* Security Notice */}
+          <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+            <div className="flex items-start">
+              <div className="flex-shrink-0">
+                <span className="text-blue-600">🔐</span>
+              </div>
+              <div className="ml-3">
+                <h3 className="text-sm font-medium text-blue-800">Security Active</h3>
+                <p className="mt-1 text-sm text-blue-700">
+                  Two-factor authentication is required for all admin access.
+                </p>
+              </div>
             </div>
           </div>
         </div>

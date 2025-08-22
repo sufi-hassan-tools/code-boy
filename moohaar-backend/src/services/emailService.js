@@ -4,10 +4,10 @@ import config from '../config/index.js';
 class EmailService {
   constructor() {
     this.transporter = nodemailer.createTransporter({
-      service: 'gmail', // or your preferred email service
+      service: 'gmail',
       auth: {
-        user: config.EMAIL_USER || process.env.EMAIL_USER,
-        pass: config.EMAIL_PASS || process.env.EMAIL_PASS,
+        user: process.env.RESET_EMAIL || config.EMAIL_USER || process.env.EMAIL_USER,
+        pass: process.env.RESET_PASS || config.EMAIL_PASS || process.env.EMAIL_PASS,
       },
     });
   }
@@ -25,7 +25,7 @@ class EmailService {
   // Send OTP email for 2FA
   async sendOTP(email, otp, adminName) {
     const mailOptions = {
-      from: config.EMAIL_FROM || process.env.EMAIL_FROM || 'noreply@moohaar.com',
+      from: process.env.RESET_EMAIL || config.EMAIL_FROM || process.env.EMAIL_FROM || 'noreply@moohaar.com',
       to: email,
       subject: 'Moohaar Admin - Your Login OTP',
       html: `
