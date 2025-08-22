@@ -1,11 +1,11 @@
 /* eslint-env jest */
-import request from 'supertest.js';
+import request from 'supertest';
 import express from 'express';
 import jwt from 'jsonwebtoken';
 import fs from 'fs/promises';
 import path from 'path';
-import os from 'os.js';
-import module from 'module.js';
+import os from 'os';
+import module from 'module';
 
 const MALICIOUS_ZIP_B64 = `UEsDBAoAAAAAAHY2BlsAAAAAAAAAAAAAAAAKABwAdGVtcGxhdGVzL1VUCQADgPuSaIH7kmh1eAsAAQQAAAAABAAAAABQSwMEFAAAAAgAdjYGW/dzrrocAAAAHwAAABYAHAB0ZW1wbGF0ZXMvaW5kZXgubGlxdWlkVVQJAAOA+5JogPuSaHV4CwABBAAAAAAEAAAAAPNIzcnJV7ApTi7KLCixS8xJLSrRMNS00YcKAABQSwECHgMKAAAAAAB2NgZbAAAAAAAAAAAAAAAACgAYAAAAAAAAABAA7UEAAAAAdGVtcGxhdGVzL1VUBQADgPuSaHV4CwABBAAAAAAEAAAAAFBLAQIeAxQAAAAIAHY2Blv3c666HAAAAB8AAAAWABgAAAAAAAEAAACkgUQAAAB0ZW1wbGF0ZXMvaW5kZXgubGlxdWlkVVQFAAOA+5JodXgLAAEEAAAAAAQAAAAAUEsFBgAAAAACAAIArAAAALAAAAAAAA==`;
 

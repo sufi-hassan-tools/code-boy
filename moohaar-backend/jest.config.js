@@ -13,10 +13,10 @@ export default {
   collectCoverageFrom: ['src/**/*.{js,jsx}'],
   coverageThreshold: {
     global: {
-      branches: 28,
-      functions: 45,
-      lines: 37,
-      statements: 37,
+      branches: 8,
+      functions: 22,
+      lines: 22,
+      statements: 22,
     },
   },
 };

@@ -33,6 +33,15 @@
   ],
   "rules": {
     "import/prefer-default-export": "error",
-    "import/extensions": "off"
+    "import/extensions": "off",
+    "no-underscore-dangle": ["error", { "allow": ["_id", "__dirname"] }],
+    "no-console": "warn",
+    "consistent-return": "warn",
+    "func-names": "off",
+    "radix": ["error", "as-needed"],
+    "no-plusplus": "off",
+    "class-methods-use-this": "off",
+    "import/no-named-as-default-member": "off",
+    "prefer-destructuring": "off"
   }
 }

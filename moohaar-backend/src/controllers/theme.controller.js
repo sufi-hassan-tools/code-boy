@@ -113,8 +113,8 @@ router.post(
 router.get('/', auth, async (req, res, next) => {
   try {
     let { offset = 0, limit = 2 } = req.query;
-    offset = parseInt(offset, 10);
-    limit = parseInt(limit, 10);
+    offset = parseInt(offset);
+    limit = parseInt(limit);
 
     if (Number.isNaN(offset) || Number.isNaN(limit)) {
       return res

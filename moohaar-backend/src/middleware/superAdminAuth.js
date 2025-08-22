@@ -97,8 +97,7 @@ export const authenticateAdmin = async (req, res, next) => {
 };
 
 // Role-based authorization middleware
-export const requireRole = (allowedRoles) => {
-  return (req, res, next) => {
+export const requireRole = (allowedRoles) => (req, res, next) => {
     if (!req.admin) {
       return res.status(401).json({
         success: false,
@@ -115,11 +114,9 @@ export const requireRole = (allowedRoles) => {
     
     next();
   };
-};
 
 // Permission-based authorization middleware
-export const requirePermission = (category, action) => {
-  return (req, res, next) => {
+export const requirePermission = (category, action) => (req, res, next) => {
     if (!req.admin || !req.permissions) {
       return res.status(401).json({
         success: false,
@@ -138,7 +135,6 @@ export const requirePermission = (category, action) => {
     
     next();
   };
-};
 
 // Owner admin only middleware
 export const requireOwnerAdmin = (req, res, next) => {
@@ -236,8 +232,7 @@ export const checkSessionTimeout = async (req, res, next) => {
 };
 
 // Middleware to log admin activities
-export const logActivity = (action, category, description) => {
-  return async (req, res, next) => {
+export const logActivity = (action, category, description) => async (req, res, next) => {
     // Store activity info in request for later logging
     req.activityLog = {
       action,
@@ -246,7 +241,6 @@ export const logActivity = (action, category, description) => {
     };
     next();
   };
-};
 
 export default {
   authenticateAdmin,

@@ -39,7 +39,7 @@ export const getBlockedIPs = async (req, res) => {
     const skip = (page - 1) * limit;
     
     // Build filter
-    let filter = {};
+    const filter = {};
     if (active === 'true') {
       filter.isActive = true;
     } else if (active === 'false') {
@@ -108,7 +108,7 @@ export const blockIP = async (req, res) => {
           success: false,
           message: 'IP address is already blocked'
         });
-      } else {
+      } 
         // Reactivate existing block
         existingBlock.isActive = true;
         existingBlock.reason = reason;
@@ -135,7 +135,7 @@ export const blockIP = async (req, res) => {
           message: 'IP address block reactivated',
           blockedIP: existingBlock
         });
-      }
+      
     }
     
     // Create new IP block
@@ -307,7 +307,7 @@ export const getAuditLogs = async (req, res) => {
     const skip = (page - 1) * limit;
     
     // Build filter
-    let filter = {};
+    const filter = {};
     
     if (category) {
       filter.category = category;

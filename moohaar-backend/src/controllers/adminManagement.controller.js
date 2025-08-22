@@ -3,7 +3,7 @@ import bcrypt from 'bcrypt';
 import AdminRole from '../models/adminRole.model.js';
 import AdminSession from '../models/adminSession.model.js';
 import AdminAuditLog from '../models/adminAuditLog.model.js';
-import BlockedIp from '../models/blockedIp.model.js';
+// import BlockedIp from '../models/blockedIp.model.js';
 import EmailService from '../services/emailService.js';
 
 // Helper function to log admin actions
@@ -28,9 +28,7 @@ const logAdminAction = async (adminId, action, category, description, target = n
 };
 
 // Generate temporary password
-const generateTempPassword = () => {
-  return crypto.randomBytes(8).toString('hex').toUpperCase();
-};
+const generateTempPassword = () => crypto.randomBytes(8).toString('hex').toUpperCase();
 
 // Approve super admin (only owner admin can do this)
 export const approveSuperAdmin = async (req, res) => {
@@ -113,7 +111,7 @@ export const approveSuperAdmin = async (req, res) => {
         }
       });
       
-    } else {
+    } 
       // Reject the super admin
       await AdminRole.findByIdAndDelete(adminId);
       
@@ -134,7 +132,7 @@ export const approveSuperAdmin = async (req, res) => {
         success: true,
         message: 'Super admin registration rejected'
       });
-    }
+    
     
   } catch (error) {
     console.error('Approve super admin error:', error);
@@ -282,7 +280,7 @@ export const getAllAdmins = async (req, res) => {
     const skip = (page - 1) * limit;
     
     // Build filter
-    let filter = {};
+    const filter = {};
     
     if (role) {
       filter.role = role;
@@ -474,7 +472,7 @@ export const forceLogoutAdmin = async (req, res) => {
     
     // Deactivate all sessions for the target admin
     const result = await AdminSession.updateMany(
-      { adminId: adminId, isActive: true },
+      { adminId, isActive: true },
       { 
         isActive: false,
         forcedLogout: {
@@ -567,7 +565,7 @@ export const deleteAdmin = async (req, res) => {
       
       // Deactivate all sessions
       await AdminSession.updateMany(
-        { adminId: adminId },
+        { adminId },
         { isActive: false }
       );
       
@@ -589,7 +587,7 @@ export const deleteAdmin = async (req, res) => {
         message: 'Admin deleted permanently'
       });
       
-    } else {
+    } 
       // Suspend admin
       const updatedAdmin = await AdminRole.findByIdAndUpdate(
         adminId,
@@ -602,7 +600,7 @@ export const deleteAdmin = async (req, res) => {
       
       // Deactivate all active sessions
       await AdminSession.updateMany(
-        { adminId: adminId, isActive: true },
+        { adminId, isActive: true },
         { 
           isActive: false,
           forcedLogout: {
@@ -631,7 +629,7 @@ export const deleteAdmin = async (req, res) => {
         message: 'Admin suspended successfully',
         admin: updatedAdmin
       });
-    }
+    
     
   } catch (error) {
     console.error('Delete/suspend admin error:', error);
@@ -662,14 +660,14 @@ export const getAdminActivity = async (req, res) => {
     
     // Get audit logs for the admin
     const activities = await AdminAuditLog.find({
-      adminId: adminId,
+      adminId,
       createdAt: { $gte: startDate }
     }).sort({ createdAt: -1 })
       .limit(1000); // Limit to prevent too much data
     
     // Get current session info
     const currentSessions = await AdminSession.find({
-      adminId: adminId,
+      adminId,
       isActive: true
     }).select('ipAddress userAgent lastActivity createdAt');
     

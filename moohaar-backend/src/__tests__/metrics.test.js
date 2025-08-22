@@ -1,4 +1,4 @@
-import request from 'supertest.js';
+import request from 'supertest';
 import app from '../server.js'; // eslint-disable-line import/no-named-as-default
 
 describe('GET /metrics', () => {

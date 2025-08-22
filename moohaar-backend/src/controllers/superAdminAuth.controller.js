@@ -43,7 +43,7 @@ const handleFailedLogin = async (ip, email, userAgent) => {
   if (blockedIp) {
     if (blockedIp.isActive) {
       return { blocked: true, reason: blockedIp.reason };
-    } else {
+    } 
       // Reactivate if too many new attempts
       blockedIp.failedAttempts += 1;
       blockedIp.lastAttempt = {
@@ -59,7 +59,7 @@ const handleFailedLogin = async (ip, email, userAgent) => {
         return { blocked: true, reason: blockedIp.reason };
       }
       await blockedIp.save();
-    }
+    
   } else {
     // Create new blocked IP record
     blockedIp = await BlockedIp.create({
@@ -558,7 +558,7 @@ export const getCurrentAdmin = async (req, res) => {
 export const logout = async (req, res) => {
   try {
     const adminId = req.admin?._id;
-    const sessionId = req.sessionId;
+    const {sessionId} = req;
     
     if (sessionId) {
       // Deactivate session
