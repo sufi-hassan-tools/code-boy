@@ -38,3 +38,5 @@ class MockOrder {
     this.orders = orders;
   }
 }
+
+export default MockOrder;
