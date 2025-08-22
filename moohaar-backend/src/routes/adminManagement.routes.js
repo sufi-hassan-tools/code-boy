@@ -1,5 +1,14 @@
 import express from 'express';
-import adminManagementController from '../controllers/adminManagement.controller.js';
+import {
+  approveSuperAdmin,
+  createAdmin,
+  getAllAdmins,
+  getPendingApprovals,
+  updateAdminPermissions,
+  forceLogoutAdmin,
+  deleteAdmin,
+  getAdminActivity,
+} from '../controllers/adminManagement.controller.js';
 import { 
   authenticateAdmin, 
   requireOwnerAdmin, 
@@ -14,43 +23,43 @@ router.use(authenticateAdmin);
 router.use(checkSessionTimeout);
 
 // Approve super admin (owner admin only)
-router.post('/approve/:adminId', requireOwnerAdmin, adminManagementController.approveSuperAdmin);
+router.post('/approve/:adminId', requireOwnerAdmin, approveSuperAdmin);
 
 // Get pending super admin approvals (owner admin only)
-router.get('/pending-approvals', requireOwnerAdmin, adminManagementController.getPendingApprovals);
+router.get('/pending-approvals', requireOwnerAdmin, getPendingApprovals);
 
 // Create new admin/manager/editor
 router.post('/create', 
   requirePermission('adminManagement', 'createAdmins'),
-  adminManagementController.createAdmin
+  createAdmin
 );
 
 // Get all admins
 router.get('/all', 
   requirePermission('adminManagement', 'viewAdmins'),
-  adminManagementController.getAllAdmins
+  getAllAdmins
 );
 
 // Update admin permissions
 router.put('/permissions/:adminId', 
   requirePermission('adminManagement', 'editAdmins'),
-  adminManagementController.updateAdminPermissions
+  updateAdminPermissions
 );
 
 // Force logout admin
 router.post('/force-logout/:adminId', 
-  adminManagementController.forceLogoutAdmin
+  forceLogoutAdmin
 );
 
 // Delete/suspend admin
 router.delete('/:adminId', 
   requirePermission('adminManagement', 'deleteAdmins'),
-  adminManagementController.deleteAdmin
+  deleteAdmin
 );
 
 // Get admin activity (30 days + live)
 router.get('/activity/:adminId', 
-  adminManagementController.getAdminActivity
+  getAdminActivity
 );
 
 export default router;

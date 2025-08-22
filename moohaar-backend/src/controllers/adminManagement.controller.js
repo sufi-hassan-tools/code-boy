@@ -3,7 +3,6 @@ import bcrypt from 'bcrypt';
 import AdminRole from '../models/adminRole.model.js';
 import AdminSession from '../models/adminSession.model.js';
 import AdminAuditLog from '../models/adminAuditLog.model.js';
-import BlockedIp from '../models/blockedIp.model.js';
 import EmailService from '../services/emailService.js';
 
 // Helper function to log admin actions
@@ -282,7 +281,7 @@ export const getAllAdmins = async (req, res) => {
     const skip = (page - 1) * limit;
     
     // Build filter
-    let filter = {};
+    const filter = {};
     
     if (role) {
       filter.role = role;

@@ -1,5 +1,5 @@
 /* eslint-env jest */
-import request from 'supertest.js';
+import request from 'supertest';
 import mongoose from 'mongoose';
 import express from 'express';
 import healthCheck from '../health.controller.js';

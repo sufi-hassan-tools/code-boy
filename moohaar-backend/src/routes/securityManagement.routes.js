@@ -1,5 +1,12 @@
 import express from 'express';
-import securityManagementController from '../controllers/securityManagement.controller.js';
+import {
+  getBlockedIPs,
+  blockIP,
+  unblockIP,
+  getAuditLogs,
+  getSystemStats,
+  getRealTimeActivity,
+} from '../controllers/securityManagement.controller.js';
 import { 
   authenticateAdmin, 
   requirePermission,
@@ -16,37 +23,37 @@ router.use(checkSessionTimeout);
 // Get all blocked IPs
 router.get('/blocked-ips', 
   requirePermission('system', 'manageBlacklist'),
-  securityManagementController.getBlockedIPs
+  getBlockedIPs
 );
 
 // Block an IP address
 router.post('/block-ip', 
   requirePermission('system', 'manageBlacklist'),
-  securityManagementController.blockIP
+  blockIP
 );
 
 // Unblock an IP address (owner admin only)
 router.post('/unblock-ip/:ipId', 
   requireOwnerAdmin,
-  securityManagementController.unblockIP
+  unblockIP
 );
 
 // Get audit logs
 router.get('/audit-logs', 
   requirePermission('system', 'viewAuditLogs'),
-  securityManagementController.getAuditLogs
+  getAuditLogs
 );
 
 // Get system statistics
 router.get('/stats', 
   requirePermission('system', 'viewSettings'),
-  securityManagementController.getSystemStats
+  getSystemStats
 );
 
 // Get real-time activity
 router.get('/real-time-activity', 
   requirePermission('adminManagement', 'viewAdmins'),
-  securityManagementController.getRealTimeActivity
+  getRealTimeActivity
 );
 
 export default router;
