@@ -39,7 +39,7 @@ export const getBlockedIPs = async (req, res) => {
     const skip = (page - 1) * limit;
     
     // Build filter
-    let filter = {};
+    const filter = {};
     if (active === 'true') {
       filter.isActive = true;
     } else if (active === 'false') {
@@ -307,7 +307,7 @@ export const getAuditLogs = async (req, res) => {
     const skip = (page - 1) * limit;
     
     // Build filter
-    let filter = {};
+    const filter = {};
     
     if (category) {
       filter.category = category;

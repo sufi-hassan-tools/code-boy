@@ -1,22 +1,28 @@
 import express from 'express';
-import superAdminAuthController from '../controllers/superAdminAuth.controller.js';
+import {
+  registerOwnerAdmin,
+  registerSuperAdmin,
+  login,
+  getCurrentAdmin,
+  logout,
+} from '../controllers/superAdminAuth.controller.js';
 import { rateLimitLogin } from '../middleware/superAdminAuth.js';
 
 const router = express.Router();
 
 // Owner admin registration route (sufimoohaaradmin)
-router.post('/owner-admin/register', rateLimitLogin, superAdminAuthController.registerOwnerAdmin);
+router.post('/owner-admin/register', rateLimitLogin, registerOwnerAdmin);
 
 // Super admin registration route (requires approval)
-router.post('/super-admin/register', rateLimitLogin, superAdminAuthController.registerSuperAdmin);
+router.post('/super-admin/register', rateLimitLogin, registerSuperAdmin);
 
 // Admin login (with 2FA)
-router.post('/login', rateLimitLogin, superAdminAuthController.login);
+router.post('/login', rateLimitLogin, login);
 
 // Get current admin info
-router.get('/me', superAdminAuthController.getCurrentAdmin);
+router.get('/me', getCurrentAdmin);
 
 // Admin logout
-router.post('/logout', superAdminAuthController.logout);
+router.post('/logout', logout);
 
 export default router;

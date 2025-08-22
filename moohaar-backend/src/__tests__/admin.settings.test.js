@@ -1,4 +1,4 @@
-import { jest } from '@jest/globals.js';
+import { jest } from '@jest/globals';
 import { getSettings, updateSettings } from '../controllers/admin.controller.js';
 
 describe('Admin Settings Controller', () => {

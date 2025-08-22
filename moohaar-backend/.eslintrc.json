@@ -5,6 +5,13 @@
     "ecmaVersion": "latest",
     "sourceType": "module"
   },
+  "settings": {
+    "import/resolver": {
+      "node": {
+        "extensions": [".js", ".json"]
+      }
+    }
+  },
   "overrides": [
     {
       "files": ["scripts/**/*.js"],
@@ -25,6 +32,7 @@
         "no-await-in-loop": "off",
         "no-continue": "off",
         "import/no-extraneous-dependencies": "off",
+        "import/no-unresolved": "off",
         "lines-between-class-members": "off",
         "import/no-named-as-default-member": "off",
         "prefer-destructuring": "off"
@@ -33,6 +41,17 @@
   ],
   "rules": {
     "import/prefer-default-export": "error",
-    "import/extensions": "off"
+    "import/extensions": "off",
+    "no-underscore-dangle": "off",
+    "no-console": "warn",
+    "radix": "off",
+    "arrow-body-style": "off",
+    "consistent-return": "off",
+    "func-names": "off",
+    "class-methods-use-this": "off",
+    "no-plusplus": "off",
+    "object-shorthand": "off",
+    "no-else-return": "off",
+    "prefer-destructuring": "off"
   }
 }
