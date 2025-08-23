@@ -75,6 +75,60 @@ class EmailService {
     }
   }
 
+  // Send password reset link
+  async sendPasswordResetEmail(email, name, token) {
+    const resetLink = `${config.FRONTEND_URL || 'http://localhost:5173'}/reset-password/${token}`;
+
+    const mailOptions = {
+      from: config.EMAIL_FROM || process.env.EMAIL_FROM || 'noreply@moohaar.com',
+      to: email,
+      subject: 'Moohaar Admin - Password Reset Request',
+      html: `
+        <div style="font-family: 'Montserrat', Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f8f9fa;">
+          <div style="background-color: #1C2B64; color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0;">
+            <h1 style="margin: 0; font-size: 28px; font-weight: 700;">🟦 Moohaar Admin</h1>
+            <p style="margin: 10px 0 0 0; color: #FBECB2; font-size: 16px;">Password Reset</p>
+          </div>
+
+          <div style="background-color: white; padding: 40px; border-radius: 0 0 10px 10px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+            <h2 style="color: #1C2B64; margin-top: 0;">Hello ${name},</h2>
+
+            <p style="color: #333; font-size: 16px; line-height: 1.6;">
+              We received a request to reset the password for your Moohaar Admin account.
+            </p>
+
+            <p style="color: #333; font-size: 16px; line-height: 1.6;">
+              Click the button below to set a new password:
+            </p>
+
+            <div style="text-align: center; margin: 30px 0;">
+              <a href="${resetLink}"
+                 style="background-color: #1C2B64; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: 600;">
+                Reset Password
+              </a>
+            </div>
+
+            <p style="color: #666; font-size: 14px;">
+              If you did not request a password reset, please ignore this email or contact support if you have concerns.
+            </p>
+
+            <p style="color: #666; font-size: 14px; margin-top: 30px;">
+              This link is valid for 1 hour.
+            </p>
+          </div>
+        </div>
+      `
+    };
+
+    try {
+      await this.transporter.sendMail(mailOptions);
+      return { success: true };
+    } catch (error) {
+      // Removed console.error for production
+      return { success: false, error: error.message };
+    }
+  }
+
   // Send super admin approval notification
   async sendApprovalNotification(ownerEmail, newAdminName, newAdminEmail, newAdminRole) {
     const mailOptions = {

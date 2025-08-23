@@ -4,6 +4,7 @@ import bcrypt from 'bcrypt';
 import Admin from '../models/admin.model.js';
 import config from '../config/index.js';
 import { getAdminSecret } from '../utils/adminSecret.util.js';
+import emailService from '../services/emailService.js';
 
 export const register = async (req, res) => {
   const { secret } = req.params;
@@ -78,9 +79,9 @@ export const forgotPassword = async (req, res) => {
     admin.resetTokenHash = hash;
     admin.resetTokenExpiry = new Date(Date.now() + 60 * 60 * 1000);
     await admin.save();
-    return res.json({ message: 'Reset token generated', token });
+    await emailService.sendPasswordResetEmail(admin.email, admin.name, token);
   }
-  return res.json({ message: 'Reset token generated' });
+  return res.json({ message: 'If an account with that email exists, a password reset link has been sent.' });
 };
 
 export const resetPassword = async (req, res) => {
