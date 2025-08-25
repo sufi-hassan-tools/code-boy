@@ -50,19 +50,11 @@ export default function OwnerAdminRegister() {
     setLoading(true);
 
     try {
-      console.log('Attempting owner admin registration with:', {
-        name: formData.name,
-        email: formData.email,
-        apiBaseURL: api.defaults.baseURL
-      });
-
       const response = await api.post('/api/super-admin/auth/owner-admin/register', {
         name: formData.name,
         email: formData.email,
         password: formData.password
       });
-
-      console.log('Registration response:', response.data);
 
       if (response.data.success) {
         setSuccess('Owner admin registered successfully! You can now login.');
@@ -71,8 +63,6 @@ export default function OwnerAdminRegister() {
         }, 2000);
       }
     } catch (err) {
-      console.error('Registration error:', err);
-      console.error('Error response:', err.response?.data);
       const message = err.response?.data?.message || 'Registration failed';
       setError(message);
     } finally {

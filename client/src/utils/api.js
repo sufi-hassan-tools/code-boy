@@ -2,9 +2,9 @@ import axios from 'axios';
 
 // Create axios instance with base configuration
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || (process.env.NODE_ENV === 'production' 
+  baseURL: process.env.NODE_ENV === 'production' 
     ? 'https://moohaarapp.onrender.com' 
-    : 'http://localhost:5000'),
+    : 'http://localhost:5000',
   withCredentials: true,
   timeout: 10000,
 });
@@ -37,7 +37,6 @@ api.interceptors.response.use(
   (error) => {
     // Handle network errors
     if (!error.response) {
-      console.error('Network error:', error.message);
       return Promise.reject(new Error('Network error. Please check your connection.'));
     }
     
@@ -55,4 +54,3 @@ api.interceptors.response.use(
 );
 
 export default api;
-
