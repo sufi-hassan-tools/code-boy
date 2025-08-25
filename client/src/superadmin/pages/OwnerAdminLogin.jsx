@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../../utils/api';
 
 export default function OwnerAdminLogin() {
   const navigate = useNavigate();
@@ -34,7 +34,7 @@ export default function OwnerAdminLogin() {
     setLoading(true);
 
     try {
-      const response = await axios.post('/api/super-admin/auth/login', {
+      const response = await api.post('/api/super-admin/auth/login', {
         email: formData.email,
         password: formData.password
       });
@@ -72,7 +72,7 @@ export default function OwnerAdminLogin() {
     setLoading(true);
 
     try {
-      const response = await axios.post('/api/super-admin/auth/login', {
+      const response = await api.post('/api/super-admin/auth/login', {
         email: formData.email,
         password: formData.password,
         otp: formData.otp
@@ -97,7 +97,7 @@ export default function OwnerAdminLogin() {
     setLoading(true);
 
     try {
-      await axios.post('/api/super-admin/auth/login', {
+      await api.post('/api/super-admin/auth/login', {
         email: formData.email,
         password: formData.password
       });

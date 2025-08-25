@@ -12,6 +12,9 @@ export default defineConfig({
       '/api': 'http://localhost:5000'
     }
   },
+  define: {
+    __API_BASE_URL__: JSON.stringify(process.env.NODE_ENV === 'production' ? 'https://moohaarapp.onrender.com' : 'http://localhost:5000'),
+  },
   optimizeDeps: {
     include: ['browser-image-compression']
   },

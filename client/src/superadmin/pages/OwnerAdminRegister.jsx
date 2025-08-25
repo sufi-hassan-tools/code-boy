@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../../utils/api';
 
 export default function OwnerAdminRegister() {
   const navigate = useNavigate();
@@ -50,11 +50,19 @@ export default function OwnerAdminRegister() {
     setLoading(true);
 
     try {
-      const response = await axios.post('/api/super-admin/auth/owner-admin/register', {
+      console.log('Attempting owner admin registration with:', {
+        name: formData.name,
+        email: formData.email,
+        apiBaseURL: api.defaults.baseURL
+      });
+
+      const response = await api.post('/api/super-admin/auth/owner-admin/register', {
         name: formData.name,
         email: formData.email,
         password: formData.password
       });
+
+      console.log('Registration response:', response.data);
 
       if (response.data.success) {
         setSuccess('Owner admin registered successfully! You can now login.');
@@ -63,6 +71,8 @@ export default function OwnerAdminRegister() {
         }, 2000);
       }
     } catch (err) {
+      console.error('Registration error:', err);
+      console.error('Error response:', err.response?.data);
       const message = err.response?.data?.message || 'Registration failed';
       setError(message);
     } finally {
@@ -193,6 +203,37 @@ export default function OwnerAdminRegister() {
                   <li>Keep your credentials secure and private</li>
                   <li>Enable 2FA immediately after registration</li>
                 </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Debug Section */}
+        <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+          <div className="flex items-start">
+            <div className="flex-shrink-0">
+              <span className="text-blue-600">🔧</span>
+            </div>
+            <div className="ml-3">
+              <h3 className="text-sm font-medium text-blue-800">Debug Information</h3>
+              <div className="mt-2 text-sm text-blue-700">
+                <p>API Base URL: {api.defaults.baseURL}</p>
+                <p>Environment: {process.env.NODE_ENV}</p>
+                <button
+                  onClick={async () => {
+                    try {
+                      const response = await api.get('/api/super-admin/health');
+                      console.log('Health check response:', response.data);
+                      alert('Health check successful! Check console for details.');
+                    } catch (error) {
+                      console.error('Health check failed:', error);
+                      alert('Health check failed! Check console for details.');
+                    }
+                  }}
+                  className="mt-2 bg-blue-600 text-white px-3 py-1 rounded text-xs hover:bg-blue-700"
+                >
+                  Test Connection
+                </button>
               </div>
             </div>
           </div>
