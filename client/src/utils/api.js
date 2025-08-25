@@ -1,48 +1,77 @@
+// client/src/utils/api.js
 import axios from 'axios';
 
-// Create axios instance with base configuration
+/**
+ * Safe env var reader across CRA/Vite/Next
+ */
+function readEnv(key) {
+  if (typeof process !== 'undefined' && process.env && process.env[key]) {
+    return process.env[key];
+  }
+  if (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env[key] !== undefined) {
+    return import.meta.env[key];
+  }
+  return undefined;
+}
+
+function resolveBaseURL() {
+  // Runtime override for debugging
+  if (typeof window !== 'undefined' && window.__API_URL__) {
+    return window.__API_URL__;
+  }
+
+  const envUrl =
+    readEnv('REACT_APP_API_URL') || // CRA
+    readEnv('VITE_API_URL') ||      // Vite
+    readEnv('NEXT_PUBLIC_API_URL'); // Next.js
+
+  const fallback =
+    process.env.NODE_ENV === 'production'
+      ? 'https://moohaarapp.onrender.com'
+      : 'http://localhost:5000';
+
+  const raw = envUrl || fallback;
+  return raw.replace(/\/+$/, ''); // remove trailing slash
+}
+
+export const API_BASE_URL = resolveBaseURL();
+
 const api = axios.create({
-  baseURL: process.env.NODE_ENV === 'production'
-    ? 'https://moohaarapp.onrender.com' // live backend (Render)
-    : 'http://localhost:5000',          // local backend
-  withCredentials: true, // allow cookies/session
-  timeout: 10000,        // 10 sec timeout
+  baseURL: API_BASE_URL,
+  withCredentials: true,
+  timeout: 10000,
+  headers: { 'X-Requested-With': 'XMLHttpRequest' },
 });
 
-// Request interceptor to add headers
+// Request interceptor: CSRF token
 api.interceptors.request.use(
   (config) => {
-    // Get CSRF token from cookies if available
-    const csrfToken = document.cookie
-      .split('; ')
-      .find((row) => row.startsWith('XSRF-TOKEN='))
-      ?.split('=')[1];
+    if (typeof document !== 'undefined') {
+      const csrfToken = document.cookie
+        .split('; ')
+        .find((row) => row.startsWith('XSRF-TOKEN='))
+        ?.split('=')[1];
 
-    if (csrfToken) {
-      config.headers['X-CSRF-Token'] = csrfToken;
+      if (csrfToken) {
+        config.headers['X-CSRF-Token'] = csrfToken;
+      }
     }
-
     return config;
   },
-  (error) => {
-    return Promise.reject(error);
-  }
+  (error) => Promise.reject(error)
 );
 
-// Response interceptor to handle errors globally
+// Response interceptor: global error handler
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    // Handle network issues
     if (!error.response) {
-      return Promise.reject(
-        new Error('Network error. Please check your internet connection.')
-      );
+      return Promise.reject(new Error('Network error. Please check your connection.'));
     }
 
-    // Handle 401 Unauthorized
     if (error.response.status === 401) {
       if (
+        typeof window !== 'undefined' &&
         window.location.pathname !== '/sufimoohaaradmin/login' &&
         window.location.pathname !== '/sufimoohaaradmin'
       ) {
