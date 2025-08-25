@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../../utils/api';
 
 export default function SuperAdminRegister() {
   const navigate = useNavigate();
@@ -45,7 +45,7 @@ export default function SuperAdminRegister() {
     setLoading(true);
 
     try {
-      const response = await axios.post('/api/super-admin/auth/super-admin/register', {
+      const response = await api.post('/api/super-admin/auth/super-admin/register', {
         name: formData.name,
         email: formData.email,
         password: formData.password

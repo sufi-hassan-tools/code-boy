@@ -70,7 +70,7 @@ class EmailService {
       await this.transporter.sendMail(mailOptions);
       return { success: true };
     } catch (error) {
-      // Removed console.error for production
+      console.error('OTP email sending error:', error);
       return { success: false, error: error.message };
     }
   }

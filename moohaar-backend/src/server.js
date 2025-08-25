@@ -23,6 +23,7 @@ import adminAuth from './middleware/adminAuth.js';
 import superAdminAuthRoutes from './routes/superAdminAuth.routes.js';
 import adminManagementRoutes from './routes/adminManagement.routes.js';
 import securityManagementRoutes from './routes/securityManagement.routes.js';
+import superAdminHealthRoutes from './routes/superAdminHealth.routes.js';
 import errorHandler from './middleware/errorHandler.js';
 import logger from './utils/logger.js';
 import { initCache, getCache, setCache } from './services/cache.service.js';
@@ -130,6 +131,7 @@ const moohaarOrigin = /^https:\/\/([a-z0-9-]+\.)*moohaar\.com$/i;
 const allowedOrigins = [
   'https://moohaarapp.onrender.com', 
   'https://app.onrender.com',
+  'https://moohaarapp.onrender.com:443',
   'http://localhost:5173',
   'http://localhost:3000',
   'http://127.0.0.1:5173',
@@ -184,8 +186,18 @@ app.get('/api/csrf-token', (req, res) => {
 app.use((req, res, next) => {
   if (!['POST', 'PUT', 'DELETE'].includes(req.method)) return next();
   
-  // Skip CSRF validation for super admin auth endpoints during development
+  // Skip CSRF validation for super admin auth endpoints
   if (req.path.startsWith('/api/super-admin/auth/')) {
+    return next();
+  }
+  
+  // Skip CSRF validation for super admin management endpoints
+  if (req.path.startsWith('/api/super-admin/management/')) {
+    return next();
+  }
+  
+  // Skip CSRF validation for super admin security endpoints
+  if (req.path.startsWith('/api/super-admin/security/')) {
     return next();
   }
   
@@ -251,6 +263,7 @@ app.use('/api/admin', adminAuth, authorizeAdmin, adminRoutes);
 app.use('/api/super-admin/auth', superAdminAuthRoutes);
 app.use('/api/super-admin/management', adminManagementRoutes);
 app.use('/api/super-admin/security', securityManagementRoutes);
+app.use('/api/super-admin', superAdminHealthRoutes);
 app.use('/api/themes', themeRoutes);
 app.use('/api/store', storeRoutes);
 app.use('/health', healthRoutes);

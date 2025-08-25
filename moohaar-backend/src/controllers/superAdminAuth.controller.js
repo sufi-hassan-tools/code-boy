@@ -178,10 +178,11 @@ export const registerOwnerAdmin = async (req, res) => {
     });
     
     } catch (error) {
-    // Removed console.error for production
+    console.error('Owner admin registration error:', error);
     return res.status(500).json({
       success: false,
-      message: 'Internal server error'
+      message: 'Internal server error',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
     });
   }
 };

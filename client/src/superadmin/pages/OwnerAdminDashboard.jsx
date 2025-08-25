@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../../utils/api';
 import PermissionMatrix from '../components/PermissionMatrix';
 
 export default function OwnerAdminDashboard() {
@@ -45,11 +45,11 @@ export default function OwnerAdminDashboard() {
   const fetchDashboardData = async () => {
     try {
       const [statsRes, approvalsRes, adminsRes, activityRes, blockedRes] = await Promise.all([
-        axios.get('/api/super-admin/security/stats'),
-        axios.get('/api/super-admin/management/pending-approvals'),
-        axios.get('/api/super-admin/management/all?limit=10'),
-        axios.get('/api/super-admin/security/real-time-activity'),
-        axios.get('/api/super-admin/security/blocked-ips?limit=5')
+        api.get('/api/super-admin/security/stats'),
+        api.get('/api/super-admin/management/pending-approvals'),
+        api.get('/api/super-admin/management/all?limit=10'),
+        api.get('/api/super-admin/security/real-time-activity'),
+        api.get('/api/super-admin/security/blocked-ips?limit=5')
       ]);
 
       setStats(statsRes.data.data);
@@ -69,7 +69,7 @@ export default function OwnerAdminDashboard() {
 
   const fetchRealtimeActivity = async () => {
     try {
-      const res = await axios.get('/api/super-admin/security/real-time-activity');
+      const res = await api.get('/api/super-admin/security/real-time-activity');
       setRealtimeActivity(res.data.data.recentActivity);
     } catch (error) {
       console.error('Failed to fetch real-time activity:', error);
@@ -78,7 +78,7 @@ export default function OwnerAdminDashboard() {
 
   const handleLogout = async () => {
     try {
-      await axios.post('/api/super-admin/auth/logout');
+      await api.post('/api/super-admin/auth/logout');
       localStorage.removeItem('adminRole');
       localStorage.removeItem('adminName');
       navigate('/sufimoohaaradmin/login');
@@ -93,13 +93,13 @@ export default function OwnerAdminDashboard() {
 
   const handleApproveAdmin = async (adminId, approved) => {
     try {
-      await axios.post(`/api/super-admin/management/approve/${adminId}`, {
+      await api.post(`/api/super-admin/management/approve/${adminId}`, {
         approved,
         customPermissions: approved ? customPermissions : null
       });
       
       // Refresh pending approvals
-      const res = await axios.get('/api/super-admin/management/pending-approvals');
+      const res = await api.get('/api/super-admin/management/pending-approvals');
       setPendingApprovals(res.data.data);
       
       setShowApprovalModal(false);
@@ -114,10 +114,10 @@ export default function OwnerAdminDashboard() {
   const handleCreateAdmin = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('/api/super-admin/management/create', createForm);
+      await api.post('/api/super-admin/management/create', createForm);
       
       // Refresh admins list
-      const res = await axios.get('/api/super-admin/management/all?limit=10');
+      const res = await api.get('/api/super-admin/management/all?limit=10');
       setAdmins(res.data.data.admins);
       
       setShowCreateModal(false);
@@ -139,7 +139,7 @@ export default function OwnerAdminDashboard() {
   const handleForceLogout = async (adminId, adminName) => {
     if (confirm(`Force logout ${adminName}? This will terminate all their active sessions.`)) {
       try {
-        await axios.post(`/api/super-admin/management/force-logout/${adminId}`);
+        await api.post(`/api/super-admin/management/force-logout/${adminId}`);
         alert('Admin logged out successfully');
         fetchDashboardData(); // Refresh data
       } catch (error) {
@@ -153,7 +153,7 @@ export default function OwnerAdminDashboard() {
     const reason = prompt('Enter reason for blocking this IP:');
     if (reason) {
       try {
-        await axios.post('/api/super-admin/security/block-ip', {
+        await api.post('/api/super-admin/security/block-ip', {
           ipAddress,
           reason
         });
@@ -170,7 +170,7 @@ export default function OwnerAdminDashboard() {
     const reason = prompt('Enter reason for unblocking this IP:');
     if (reason) {
       try {
-        await axios.post(`/api/super-admin/security/unblock-ip/${ipId}`, { reason });
+        await api.post(`/api/super-admin/security/unblock-ip/${ipId}`, { reason });
         alert('IP unblocked successfully');
         fetchDashboardData(); // Refresh data
       } catch (error) {
