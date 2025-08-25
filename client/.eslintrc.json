@@ -1,14 +1,32 @@
 {
   "extends": [
     "airbnb-base",
-    "prettier"
+    "prettier",
+    "plugin:react/recommended",
+    "plugin:react-hooks/recommended"
   ],
   "env": {
     "browser": true,
-    "es2022": true
+    "es2022": true,
+    "jest": true
+  },
+  "parser": "@babel/eslint-parser",
+  "parserOptions": {
+    "requireConfigFile": false,
+    "sourceType": "module",
+    "ecmaVersion": "latest",
+    "ecmaFeatures": {
+      "jsx": true
+    }
+  },
+  "settings": {
+    "react": {
+      "version": "detect"
+    }
   },
   "plugins": [
-    "cypress"
+    "cypress",
+    "react"
   ],
   "overrides": [
     {
@@ -30,6 +48,14 @@
           }
         ],
         "no-undef": "off"
+      }
+    },
+    {
+      "files": [
+        "run-tests.js"
+      ],
+      "rules": {
+        "no-console": "off"
       }
     }
   ]
