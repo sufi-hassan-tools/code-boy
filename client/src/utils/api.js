@@ -16,7 +16,9 @@ function readEnv(key) {
 
 function resolveBaseURL() {
   // Runtime override for debugging
+  // eslint-disable-next-line no-underscore-dangle
   if (typeof window !== 'undefined' && window.__API_URL__) {
+    // eslint-disable-next-line no-underscore-dangle
     return window.__API_URL__;
   }
 
@@ -53,6 +55,7 @@ api.interceptors.request.use(
         ?.split('=')[1];
 
       if (csrfToken) {
+        // eslint-disable-next-line no-param-reassign
         config.headers['X-CSRF-Token'] = csrfToken;
       }
     }

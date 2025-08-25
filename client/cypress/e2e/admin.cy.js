@@ -1,4 +1,4 @@
-before(() => {
+before(function setupLocalPreview() {
   const baseUrl = Cypress.config('baseUrl') || '';
   const isLocal = baseUrl.includes('localhost') || baseUrl.includes('127.0.0.1');
   if (isLocal) {
@@ -8,17 +8,17 @@ before(() => {
   }
 });
 
-before(function () {
+before(function skipOnServerUnavailable() {
   // Skip the entire suite if the target server is unavailable (e.g., remote 5xx)
-  cy.request({ url: '/health', failOnStatusCode: false, timeout: 120000 }).then((resp) => {
+  cy.request({ url: '/health', failOnStatusCode: false, timeout: 120000 }).then(function handleHealthResponse(resp) {
     if (resp.status >= 500 || resp.status === 0) {
       this.skip();
     }
   });
 });
 
-describe('Admin E2E', () => {
-  it('logs in as an admin', () => {
+describe('Admin E2E', function adminE2ETests() {
+  it('logs in as an admin', function testAdminLogin() {
     cy.intercept('POST', '/api/auth/login', { statusCode: 200, body: { token: 'fake' } }).as('login');
     cy.visit('/login', { failOnStatusCode: false });
     cy.wait('@csrf');
@@ -31,9 +31,9 @@ describe('Admin E2E', () => {
     cy.url().should('include', '/dashboard');
   });
 
-  it('navigates to each admin section', () => {
+  it('navigates to each admin section', function testAdminNavigation() {
     // Set an admin JWT-like cookie for route guard
-    const payload = btoa(JSON.stringify({ role: 'admin', exp: Math.floor(Date.now()/1000) + 3600 }));
+    const payload = btoa(JSON.stringify({ role: 'admin', exp: Math.floor(Date.now() / 1000) + 3600 }));
     cy.setCookie('accessToken', `dummy.${payload}.sig`);
 
     cy.visit('/admin', { failOnStatusCode: false });
@@ -49,9 +49,9 @@ describe('Admin E2E', () => {
     cy.url().should('include', '/admin/settings');
   });
 
-  it('performs a simple CRUD operation', () => {
+  it('performs a simple CRUD operation', function testSimpleCRUD() {
     // Ensure admin access
-    const payload = btoa(JSON.stringify({ role: 'admin', exp: Math.floor(Date.now()/1000) + 3600 }));
+    const payload = btoa(JSON.stringify({ role: 'admin', exp: Math.floor(Date.now() / 1000) + 3600 }));
     cy.setCookie('accessToken', `dummy.${payload}.sig`);
 
     cy.visit('/admin/users', { failOnStatusCode: false });
